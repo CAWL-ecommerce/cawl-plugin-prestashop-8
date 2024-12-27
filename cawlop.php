@@ -52,6 +52,7 @@ class Cawlop extends PaymentModule
         $this->displayName = $this->l('Cawl Online Payments');
         $this->description = $this->l('This module offers a 1-click integration to start accepting payments and grow your revenues by offering your customers with global and regional payment methods to sell across Europe.');
         //@formatter:on
+        $this->theme = Tools::version_compare(_PS_VERSION_, '1.7.7', '>=') ? 'new-theme' : 'legacy';
     }
 
     /**
