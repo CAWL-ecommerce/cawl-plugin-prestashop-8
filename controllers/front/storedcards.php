@@ -15,7 +15,7 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 /**
- * Class WorldlineopStoredCardsModuleFrontController
+ * Class CawlopStoredCardsModuleFrontController
  */
 class CawlopStoredCardsModuleFrontController extends ModuleFrontController
 {
