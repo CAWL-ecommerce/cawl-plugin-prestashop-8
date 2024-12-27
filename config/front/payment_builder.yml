@@ -22,7 +22,7 @@ services:
       - '@cawlop.context'
       - '@cawlop.shopping_cart.presenter'
 
-  payment_request.director:
+  cawlop.payment_request.director:
     class: 'WorldlineOP\PrestaShop\Builder\PaymentRequestDirector'
     public: true
     calls:
