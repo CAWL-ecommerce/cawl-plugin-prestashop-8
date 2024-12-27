@@ -358,7 +358,7 @@ class Cawlop extends PaymentModule
         if (false === $transaction) {
             return '';
         }
-        $transactionId = strstr($transaction->reference, '_', true);
+        $transactionId = substr($transaction->reference, 0, -3);
         if (false === $transactionId) {
             $transactionId = $transaction->reference;
         }
