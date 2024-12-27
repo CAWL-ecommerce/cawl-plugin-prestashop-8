@@ -166,7 +166,7 @@
             </div>
             {if $transactionData.actions.isAuthorized && $transactionData.captures.capturableAmount > 0}
               <form class="form-horizontal"
-                    action="{$link->getAdminLink('AdminWorldlineopAjaxTransaction')|escape:'htmlall':'UTF-8'}"
+                    action="{$link->getAdminLink('AdminCawlopAjaxTransaction')|escape:'htmlall':'UTF-8'}"
                     name="worldlineop_capture"
                     id="worldlineop-capture-form"
                     method="post"
@@ -202,7 +202,7 @@
                 <p class="alert-text">{l s='Be careful, this action cannot be reverted' mod='cawlop'}</p>
               </div>
               <form class="form-horizontal"
-                    action="{$link->getAdminLink('AdminWorldlineopAjaxTransaction')|escape:'htmlall':'UTF-8'}"
+                    action="{$link->getAdminLink('AdminCawlopAjaxTransaction')|escape:'htmlall':'UTF-8'}"
                     name="worldlineop_cancel"
                     id="worldlineop-cancel-form"
                     method="post"
@@ -269,7 +269,7 @@
             {if $transactionData.actions.isRefundable && $transactionData.refunds.refundableAmount > 0}
               <hr>
               <form class="form-horizontal"
-                    action="{$link->getAdminLink('AdminWorldlineopAjaxTransaction')|escape:'htmlall':'UTF-8'}"
+                    action="{$link->getAdminLink('AdminCawlopAjaxTransaction')|escape:'htmlall':'UTF-8'}"
                     name="worldlineop_refund"
                     id="worldlineop-refund-form"
                     method="post"

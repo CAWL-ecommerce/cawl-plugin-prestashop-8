@@ -132,7 +132,7 @@
               {l s='The minimum log level will be set to Debug.' mod='cawlop'}
               {l s='Older files can be accessed on your server, in the "logs" directory of this module.' mod='cawlop'}
               <br/>
-              <a href="{$link->getAdminLink('AdminWorldlineopLogs', true, [], ['action' => 'downloadLogFile'])|escape:'html':'UTF-8'}">
+              <a href="{$link->getAdminLink('AdminCawlopLogs', true, [], ['action' => 'downloadLogFile'])|escape:'html':'UTF-8'}">
                 {l s='Click here to download the latest file' mod='cawlop'}
               </a>
               <span></span>
