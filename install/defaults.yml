@@ -82,7 +82,7 @@ configuration:
     force3DsV2: 1
     switchEndpoint: 0
     testEndpoint: 'https://payment.preprod.cawl-solutions.fr'
-    prodEndpoint: 'https://payment..cawl-solutions.fr'
+    prodEndpoint: 'https://payment.cawl-solutions.fr'
     logsEnabled: 0
     paymentSettings:
       transactionType: 'SALE'
