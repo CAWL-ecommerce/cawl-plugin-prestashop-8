@@ -22,8 +22,8 @@ if (!defined('_PS_VERSION_')) {
  */
 class Settings
 {
-    public const DEFAULT_SDK_ENDPOINT_TEST = 'https://payment.preprod.ca.cawl-solutions.fr';
-    public const DEFAULT_SDK_ENDPOINT_PROD = 'https://payment.ca.cawl-solutions.fr';
+    public const DEFAULT_SDK_ENDPOINT_TEST = 'https://payment.preprod.cawl-solutions.fr';
+    public const DEFAULT_SDK_ENDPOINT_PROD = 'https://payment.cawl-solutions.fr';
 
     public const DEFAULT_SUBDOMAIN = 'https://payment.';
 
