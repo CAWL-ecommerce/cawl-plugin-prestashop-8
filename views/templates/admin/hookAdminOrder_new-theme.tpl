@@ -84,7 +84,7 @@
               </strong>
             </div>
             <div id="" class="col-sm text-center">
-              <p class="text-muted mb-0"><strong>{l s='Exemption type' mod='worldlineop'}</strong></p>
+              <p class="text-muted mb-0"><strong>{l s='Exemption type' mod='cawl'}</strong></p>
               <strong id="">
                 {$transactionData.payment.exemptionType|escape:'htmlall':'UTF-8'}
               </strong>
