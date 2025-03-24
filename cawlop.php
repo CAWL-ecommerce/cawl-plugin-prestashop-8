@@ -95,6 +95,7 @@ class Cawlop extends PaymentModule
         Configuration::deleteByName('CAWLOP_ACCOUNT_SETTINGS');
         Configuration::deleteByName('CAWLOP_ADVANCED_SETTINGS');
         Configuration::deleteByName('CAWLOP_PAYMENT_METHODS_SETTINGS');
+        Configuration::deleteByName('CAWLOP_SHOW_ADVANCED_SETTINGS');
 
         return parent::uninstall();
     }

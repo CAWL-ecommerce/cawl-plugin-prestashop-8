@@ -25,7 +25,7 @@ function upgrade_module_2_0_1()
     $previousShopContext = Shop::getContext();
     Shop::setContext(Shop::CONTEXT_ALL);
 
-    $sql = 'SELECT * FROM ' . _DB_PREFIX_ . 'configuration WHERE name = "WORLDLINEOP_ADVANCED_SETTINGS"';
+    $sql = 'SELECT * FROM ' . _DB_PREFIX_ . 'configuration WHERE name = "CAWLOP_ADVANCED_SETTINGS"';
     $results = Db::getInstance()->executeS($sql);
 
     foreach ($results as $result) {
@@ -53,7 +53,7 @@ function upgrade_module_2_0_1()
         }
 
         Configuration::updateValue(
-            'WORLDLINEOP_ADVANCED_SETTINGS',
+            'CAWLOP_ADVANCED_SETTINGS',
             json_encode($advancedSettingsArray),
             false,
             $result['id_shop_group'],
