@@ -10,17 +10,22 @@
  * @author    PrestaShop partner
  * @copyright 2021 Worldline Online Payments
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ *
  */
 
 if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+const ADVANCED_SETTINGS_COLUMN_NAME = 'CAWLOP_ADVANCED_SETTINGS';
+const THREE_DS_EXEMPTED_DEFAULT_TYPE = 'low-value';
+const THREE_DS_EXEMPTED_DEFAULT_VALUE = '30';
+
 /**
- * Updates module from previous versions to the version 2.0.1
- * Modify database: Update base URLs in advanced settings
+ * Updates module from previous versions to the version 2.0.3
+ * Modify database: Update threeDS advanced settings
  */
-function upgrade_module_2_0_1()
+function upgrade_module_2_0_3()
 {
     $previousShopContext = Shop::getContext();
     Shop::setContext(Shop::CONTEXT_ALL);
@@ -32,36 +37,32 @@ function upgrade_module_2_0_1()
         if (!array_key_exists('value', $result) || empty($result['value'])) {
             continue;
         }
-
         $advancedSettingsArray = json_decode($result['value'], true);
-        $shouldUpdate = false;
 
-        if (array_key_exists('testEndpoint', $advancedSettingsArray) &&
-            $advancedSettingsArray['testEndpoint'] == 'https://payment.preprod.ca.cawl-solutions.fr') {
-            $advancedSettingsArray['testEndpoint'] = 'https://payment.preprod.cawl-solutions.fr';
-            $shouldUpdate = true;
-        }
-
-        if (array_key_exists('prodEndpoint', $advancedSettingsArray) &&
-            $advancedSettingsArray['prodEndpoint'] == 'https://payment.ca.cawl-solutions.fr') {
-            $advancedSettingsArray['prodEndpoint'] = 'https://payment.cawl-solutions.fr';
-            $shouldUpdate = true;
-        }
-
-        if (!$shouldUpdate) {
-            continue;
+        if (shouldUpdateThreeDSConfiguration($advancedSettingsArray)) {
+            $advancedSettingsArray['threeDSExemptedType'] = THREE_DS_EXEMPTED_DEFAULT_TYPE;
+            $advancedSettingsArray['threeDSExemptedValue'] = THREE_DS_EXEMPTED_DEFAULT_VALUE;
         }
 
         Configuration::updateValue(
-            'CAWLOP_ADVANCED_SETTINGS',
+            ADVANCED_SETTINGS_COLUMN_NAME,
             json_encode($advancedSettingsArray),
             false,
             $result['id_shop_group'],
             $result['id_shop']
         );
     }
-
     Shop::setContext($previousShopContext);
 
     return true;
+}
+
+/**
+ * @param array $advancedSettingsArray
+ *
+ * @return bool
+ */
+function shouldUpdateThreeDSConfiguration($advancedSettingsArray)
+{
+    return array_key_exists('threeDSExempted', $advancedSettingsArray) && $advancedSettingsArray['threeDSExempted'];
 }
