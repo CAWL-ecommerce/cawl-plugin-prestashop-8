@@ -14,14 +14,11 @@
 
 <h1>
   {l s='What\'s new in version' mod='cawlop'}
-  2.0.0
+  2.0.3
 </h1>
 <br>
 <ul>
-  <li>{l s='The module is now compliant with PrestaShop 8' mod='cawlop'}</li>
-  <li>{l s='Fixed amounts inside capture & refund blocks' mod='cawlop'}</li>
-  <li>{l s='Force return http 200 for webhook calls' mod='cawlop'}</li>
-  <li>{l s='Changing the status used by webhook' mod='cawlop'}</li>
+  <li>{l s='Add 3DS exemption types to the plugin' mod='cawlop'}</li>
 </ul>
 <br>
 <hr>
