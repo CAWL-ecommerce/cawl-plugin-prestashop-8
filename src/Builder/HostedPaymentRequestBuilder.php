@@ -210,7 +210,6 @@ class HostedPaymentRequestBuilder extends AbstractRequestBuilder
                     $gPayThreeDSecure->setSkipAuthentication(true);
                     $gPayThreeDSecure->setExemptionRequest($threeDSExemptionType);
                 } else {
-                    $gPayThreeDSecure->setChallengeIndicator(self::CHALLENGE_INDICATOR_REQUIRED);
                     $gPayThreeDSecure->setSkipAuthentication(false);
                 }
             }
