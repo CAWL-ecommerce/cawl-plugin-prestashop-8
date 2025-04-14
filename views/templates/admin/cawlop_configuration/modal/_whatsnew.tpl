@@ -14,11 +14,11 @@
 
 <h1>
   {l s='What\'s new in version' mod='cawlop'}
-  2.0.3
+  2.0.4
 </h1>
 <br>
 <ul>
-  <li>{l s='Add 3DS exemption types to the plugin' mod='cawlop'}</li>
+  <li>{l s='Update plugin translations' mod='cawlop'}</li>
 </ul>
 <br>
 <hr>
