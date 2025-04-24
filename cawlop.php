@@ -200,6 +200,7 @@ class Cawlop extends PaymentModule
     {
         if (Tools::getValue('controller') == 'AdminCawlopConfiguration') {
             return '
+                <script type="text/javascript" src="' . $this->getPathUri() . 'views/js/translations.js"></script>
                 <script type="text/javascript" src="' . $this->getPathUri() . 'views/js/config.js"></script>
                 <script type="text/javascript" src="' . $this->getPathUri() . 'views/js/jquery.custom-file-input.js"></script>
             ';
