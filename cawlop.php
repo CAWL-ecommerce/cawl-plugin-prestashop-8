@@ -40,14 +40,14 @@ class Cawlop extends PaymentModule
     {
         $this->name = 'cawlop';
         $this->author = 'Cawl Online Payments';
-        $this->version = '2.0.4';
+        $this->version = '2.0.5';
         $this->tab = 'payments_gateways';
         //$this->module_key = '089d13d0218de8085259e542483f4438'; TODO: UPDATE MODULE KEY WHEN MODULE IS RELEASING
         $this->currencies = true;
         $this->currencies_mode = 'checkbox';
         parent::__construct();
         $this->bootstrap = true;
-        $this->ps_versions_compliancy = ['min' => '8', 'max' => '8.1.99'];
+        $this->ps_versions_compliancy = ['min' => '8', 'max' => '8.2.99'];
         //@formatter:off
         $this->displayName = $this->l('Cawl Online Payments');
         $this->description = $this->l('This module offers a 1-click integration to start accepting payments and grow your revenues by offering your customers with global and regional payment methods to sell across Europe.');
