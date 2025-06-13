@@ -26,6 +26,7 @@ use WorldlineOP\PrestaShop\Logger\LoggerFactory;
  */
 class WebhookEventPresenter implements PresenterInterface
 {
+    public const MEALVOUCHER_PRODUCT_ID = 5402;
     public const EVENTS_PAYMENT_AUTHORIZED = [
         'payment.pending_approval',
         'payment.pending_completion',
@@ -98,9 +99,9 @@ class WebhookEventPresenter implements PresenterInterface
             self::EVENTS_PAYMENT_CANCELLED,
             self::EVENTS_PAYMENT_REJECTED
         );
-        if (in_array($event->getType(), self::EVENTS_REFUNDED)) {
+        if (in_array($event->type, self::EVENTS_REFUNDED)) {
             $presentedData = $this->refundPresenter->present($event->getRefund(), $idShop);
-        } elseif (in_array($event->getType(), $paymentEvents)) {
+        } elseif (in_array($event->type, $paymentEvents) && $this->shouldHandleEvent($event)) {
             $presentedData = $this->paymentPresenter->present($event->getPayment(), $idShop);
         } else {
             $presentedData = new TransactionPresented();
@@ -108,5 +109,26 @@ class WebhookEventPresenter implements PresenterInterface
         $this->logger->debug('Returning data', ['data' => $presentedData]);
 
         return $presentedData;
+    }
+
+    /**
+     * @param WebhooksEvent $event
+     *
+     * @return bool
+     */
+    private function shouldHandleEvent($event)
+    {
+        $payment = $event->getPayment() ?: null;
+        $paymentOutput = $payment?->getPaymentOutput();
+        $redirectMethodSpecificInput = $paymentOutput?->getRedirectPaymentMethodSpecificOutput();
+        $paymentProductId = $redirectMethodSpecificInput?->getPaymentProductId();
+        $amountOfMoney = $paymentOutput->getAmountOfMoney()?->getAmount();
+        $acquiredAmount = $paymentOutput->getAcquiredAmount()?->getAmount();
+
+        if ($paymentProductId === self::MEALVOUCHER_PRODUCT_ID) {
+            return $amountOfMoney && $acquiredAmount && ($amountOfMoney === $acquiredAmount);
+        }
+
+        return true;
     }
 }

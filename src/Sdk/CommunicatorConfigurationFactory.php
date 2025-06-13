@@ -62,7 +62,7 @@ class CommunicatorConfigurationFactory
             'PrestaShop Plugin',
             $this->module->version
         );
-        $shoppingCartExtension->setExtensionId(sprintf('PSdirectv%s', $this->module->version));
+        $shoppingCartExtension->extensionId = sprintf('PSdirectv%s', $this->module->version);
         $communicator->setShoppingCartExtension($shoppingCartExtension);
 
         return $communicator;

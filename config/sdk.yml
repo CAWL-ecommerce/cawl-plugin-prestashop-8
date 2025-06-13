@@ -16,8 +16,15 @@ services:
     factory: ['@cawlop.sdk.client.factory', 'getMerchant']
 
   cawlop.sdk.connection:
-    class: 'OnlinePayments\Sdk\DefaultConnection'
+    class: 'OnlinePayments\Sdk\CommunicatorConfiguration'
     public: true
+    factory: [ '@cawlop.sdk.communicator_configuration.factory', 'getInstance' ]
+
+  cawlop.sdk.authenticator:
+    class: 'OnlinePayments\Sdk\Authentication\V1HmacAuthenticator'
+    public: true
+    arguments:
+      - '@cawlop.sdk.connection'
 
   cawlop.sdk.communicator_configuration.factory:
     class: 'WorldlineOP\PrestaShop\Sdk\CommunicatorConfigurationFactory'
@@ -31,4 +38,4 @@ services:
     public: true
     arguments:
       - '@cawlop.sdk.connection'
-      - '@=service("cawlop.sdk.communicator_configuration.factory").getInstance()'
+      - '@cawlop.sdk.authenticator'

@@ -35,6 +35,7 @@ use OnlinePayments\Sdk\Domain\PersonalInformation;
 use OnlinePayments\Sdk\Domain\PersonalName;
 use OnlinePayments\Sdk\Domain\RedirectionData;
 use OnlinePayments\Sdk\Domain\RedirectPaymentMethodSpecificInput;
+use OnlinePayments\Sdk\Domain\RedirectPaymentProduct5402SpecificInput;
 use OnlinePayments\Sdk\Domain\Shipping;
 use OnlinePayments\Sdk\Domain\SurchargeSpecificInput;
 use RandomLib\Factory;
@@ -151,6 +152,10 @@ abstract class AbstractRequestBuilder implements PaymentRequestBuilderInterface
             $this->context->link->getModuleLink($this->module->name, 'redirect', ['action' => 'redirectReturnHosted'])
         );
         $redirectPaymentMethodSpecificInput->setRedirectionData($redirectionData);
+
+        $product5402SpecificInput = new RedirectPaymentProduct5402SpecificInput();
+        $product5402SpecificInput->setCompleteRemainingPaymentAmount(true);
+        $redirectPaymentMethodSpecificInput->setPaymentProduct5402SpecificInput($product5402SpecificInput);
 
         return $redirectPaymentMethodSpecificInput;
     }
