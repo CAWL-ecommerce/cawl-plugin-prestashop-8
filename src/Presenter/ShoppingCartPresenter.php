@@ -215,7 +215,8 @@ class ShoppingCartPresenter implements PresenterInterface
                 'tax' => $amounts['tax'],
                 'quantity' => 1,
                 'productName' => $productName,
-                'productType' => $productType
+                'productType' => $productType,
+                'productCode' => 'Merged item'
             ));
     }
 
