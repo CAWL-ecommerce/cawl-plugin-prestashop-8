@@ -76,7 +76,7 @@ class WebhookEventPresenter implements PresenterInterface
             self::EVENTS_PAYMENT_REJECTED
         );
 
-        if (in_array($event->getType(), $paymentEvents)) {
+        if (in_array($event->type, $paymentEvents)) {
             $this->logger->debug('Sleeeeep', ['time' => $settings->advancedSettings->paymentSettings->safetyDelay]);
             sleep($settings->advancedSettings->paymentSettings->safetyDelay);
         }
@@ -119,11 +119,11 @@ class WebhookEventPresenter implements PresenterInterface
     private function shouldHandleEvent($event)
     {
         $payment = $event->getPayment() ?: null;
-        $paymentOutput = $payment?->getPaymentOutput();
-        $redirectMethodSpecificInput = $paymentOutput?->getRedirectPaymentMethodSpecificOutput();
-        $paymentProductId = $redirectMethodSpecificInput?->getPaymentProductId();
-        $amountOfMoney = $paymentOutput->getAmountOfMoney()?->getAmount();
-        $acquiredAmount = $paymentOutput->getAcquiredAmount()?->getAmount();
+        $paymentOutput = $payment ? $payment->getPaymentOutput() : null;
+        $redirectMethodSpecificInput = $paymentOutput ? $paymentOutput->getRedirectPaymentMethodSpecificOutput() : null;
+        $paymentProductId = $redirectMethodSpecificInput ? $redirectMethodSpecificInput->getPaymentProductId() : null;
+        $amountOfMoney = $paymentOutput->getAmountOfMoney() ? $paymentOutput->getAmountOfMoney()->getAmount() : null;
+        $acquiredAmount = $paymentOutput->getAcquiredAmount() ? $paymentOutput->getAcquiredAmount()->getAmount() : null;
 
         if ($paymentProductId === self::MEALVOUCHER_PRODUCT_ID) {
             return $amountOfMoney && $acquiredAmount && ($amountOfMoney === $acquiredAmount);

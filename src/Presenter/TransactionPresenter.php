@@ -102,7 +102,7 @@ class TransactionPresenter implements PresenterInterface
                             $payment->getPaymentOutput()
                         );
                     } catch (\Exception $e) {
-                        throw new \Exception('Could not retrieve transaction details');
+                        continue;
                     }
 
                     $currencyCode = $payment->getPaymentOutput()->getAmountOfMoney()->getCurrencyCode();
