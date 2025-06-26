@@ -41,8 +41,8 @@ class TransactionPresenter implements PresenterInterface
     public const STATUS_REFUND_REQUESTED = 'REFUND_REQUESTED';
     public const STATUS_CAPTURE_REQUESTED = 'CAPTURE_REQUESTED';
     public const STATUS_PAYMENT_CAPTURED = 'CAPTURED';
-    const STATUS_PAYMENT_REFUNDED = 'REFUNDED';
-    const STATUS_PAYMENT_REJECTED = 'REJECTED';
+    public const STATUS_PAYMENT_REFUNDED = 'REFUNDED';
+    public const STATUS_PAYMENT_REJECTED = 'REJECTED';
 
     /** @var Cawlop */
     private $module;
@@ -102,7 +102,7 @@ class TransactionPresenter implements PresenterInterface
                             $payment->getPaymentOutput()
                         );
                     } catch (\Exception $e) {
-                        continue;
+                        throw new \Exception('Could not retrieve transaction details');
                     }
 
                     $currencyCode = $payment->getPaymentOutput()->getAmountOfMoney()->getCurrencyCode();

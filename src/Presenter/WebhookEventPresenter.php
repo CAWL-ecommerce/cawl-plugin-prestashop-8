@@ -26,6 +26,7 @@ use WorldlineOP\PrestaShop\Logger\LoggerFactory;
  */
 class WebhookEventPresenter implements PresenterInterface
 {
+    public const CVCO_PRODUCT_ID = 5403;
     public const MEALVOUCHER_PRODUCT_ID = 5402;
     public const EVENTS_PAYMENT_AUTHORIZED = [
         'payment.pending_approval',
@@ -113,7 +114,6 @@ class WebhookEventPresenter implements PresenterInterface
 
     /**
      * @param WebhooksEvent $event
-     *
      * @return bool
      */
     private function shouldHandleEvent($event)
@@ -125,7 +125,7 @@ class WebhookEventPresenter implements PresenterInterface
         $amountOfMoney = $paymentOutput->getAmountOfMoney() ? $paymentOutput->getAmountOfMoney()->getAmount() : null;
         $acquiredAmount = $paymentOutput->getAcquiredAmount() ? $paymentOutput->getAcquiredAmount()->getAmount() : null;
 
-        if ($paymentProductId === self::MEALVOUCHER_PRODUCT_ID) {
+        if ($paymentProductId === self::CVCO_PRODUCT_ID || $paymentProductId === self::MEALVOUCHER_PRODUCT_ID) {
             return $amountOfMoney && $acquiredAmount && ($amountOfMoney === $acquiredAmount);
         }
 
