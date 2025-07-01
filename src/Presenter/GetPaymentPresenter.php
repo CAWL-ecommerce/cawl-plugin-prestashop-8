@@ -34,6 +34,7 @@ use OnlinePayments\Sdk\Domain\RefundRequest;
 use OnlinePayments\Sdk\Merchant\Products\GetPaymentProductParams;
 use Order;
 use Validate;
+use WorldlineOP\PrestaShop\Configuration\Entity\PaymentSettings;
 use WorldlineOP\PrestaShop\Configuration\Loader\SettingsLoader;
 use WorldlineOP\PrestaShop\Logger\LoggerFactory;
 use WorldlineOP\PrestaShop\Repository\TransactionRepository;
@@ -143,7 +144,8 @@ class GetPaymentPresenter implements PresenterInterface
         }
         $totalReceived = $paymentResponse->getPaymentOutput()->getAmountOfMoney()->getAmount();
         $totalPrestaShop = Tools::getRoundedAmountInCents($this->cart->getOrderTotal(true, Cart::BOTH, null, null, false, true), $paymentResponse->getPaymentOutput()->getAmountOfMoney()->getCurrencyCode());
-        if ($totalPrestaShop != $totalReceived) {
+        if ($totalPrestaShop != $totalReceived &&
+            PaymentSettings::TRANSACTION_TYPE_IMMEDIATE === $settings->advancedSettings->paymentSettings->transactionType) {
             $this->logger->error('Amounts received/calculated does not match', ['received' => $totalReceived, 'calculated' => $totalPrestaShop]);
             $idOrderState = $settings->advancedSettings->paymentSettings->errorOrderStateId;
         }

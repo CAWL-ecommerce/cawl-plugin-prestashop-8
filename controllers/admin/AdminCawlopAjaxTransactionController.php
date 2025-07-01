@@ -15,6 +15,7 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 use OnlinePayments\Sdk\Domain\AmountOfMoney;
+use OnlinePayments\Sdk\Domain\CancelPaymentRequest;
 use OnlinePayments\Sdk\Domain\CapturePaymentRequest;
 use OnlinePayments\Sdk\Domain\RefundRequest;
 use OnlinePayments\Sdk\ResponseException;
@@ -146,7 +147,7 @@ class AdminCawlopAjaxTransactionController extends ModuleAdminController
         $merchantClient = $this->module->getService('cawlop.sdk.client');
 
         try {
-            $cancelResponse = $merchantClient->payments()->cancelPayment($transaction['id']);
+            $cancelResponse = $merchantClient->payments()->cancelPayment($transaction['id'], new CancelPaymentRequest());
         } catch (ResponseException $re) {
             $this->context->smarty->assign('worldlineopAjaxTransactionError', $re->getMessage());
             $this->module->getLogger()->error('Cancel response exception', ['response' => json_decode($re->getResponse()->toJson(), true)]);

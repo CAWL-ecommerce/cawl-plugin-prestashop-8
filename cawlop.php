@@ -40,7 +40,7 @@ class Cawlop extends PaymentModule
     {
         $this->name = 'cawlop';
         $this->author = 'Cawl Online Payments';
-        $this->version = '2.0.5';
+        $this->version = '2.0.6';
         $this->tab = 'payments_gateways';
         //$this->module_key = '089d13d0218de8085259e542483f4438'; TODO: UPDATE MODULE KEY WHEN MODULE IS RELEASING
         $this->currencies = true;
@@ -190,6 +190,7 @@ class Cawlop extends PaymentModule
                 'alertCapture' => $this->l('Do you confirm the capture of the transaction?'),
                 'alertCancel' => $this->l('Do you confirm the cancellation of the transaction?'),
             ]);
+            $this->context->controller->addCSS($this->getPathUri() . 'views/css/admin_order.css');
         }
     }
 
@@ -282,7 +283,7 @@ class Cawlop extends PaymentModule
             $settingsPresenter = $this->getService('cawlop.settings.presenter');
 
             $this->context->smarty->assign([
-                'transactionData' => $transactionPresenter->present($idOrder),
+                'transactionsData' => $transactionPresenter->present($idOrder),
                 'settingsData' => $settingsPresenter->present(),
             ]);
         } catch (Exception $e) {
