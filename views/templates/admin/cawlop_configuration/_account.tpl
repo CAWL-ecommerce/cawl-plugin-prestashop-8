@@ -380,7 +380,8 @@
           <input type="hidden" name="action" value="saveAccountForm"/>
         </div>
       </div>
-      <div class="panel-footer">
+    </div>
+    <div class="panel-footer">
         <button type="submit" class="btn btn-default pull-right" name="submitSaveAccountForm">
           <i class="process-icon-save"></i> {l s='Save' mod='cawlop'}
         </button>
