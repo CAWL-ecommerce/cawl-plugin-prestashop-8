@@ -3,7 +3,13 @@
  * 2021 Worldline Online Payments
  *
  * NOTICE OF LICENSE
- * This source file is subject to the Academic Free License 3.0 (AFL-3.0)
+ *
+ * This source file is subject to the Academic Free License 3.0 (AFL-3.0).
+ * It is also available through the world-wide-web at this URL: https://opensource.org/licenses/AFL-3.0
+ *
+ * @author    PrestaShop partner
+ * @copyright 2021 Worldline Online Payments
+ * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
 
 if (!defined('_PS_VERSION_')) {
@@ -17,8 +23,12 @@ const ACCOUNT_SETTINGS_COLUMN_NAME = 'CAWLOP_ACCOUNT_SETTINGS';
  * - If 'webhookMode' is missing => set 'manual'
  * - If 'additionalWebhookUrls' is missing => set []
  * - Preserve existing values otherwise
+ * Updates module from previous versions to the version 2.0.11
+ * Unregisters the deprecated 'customerAccount' hook and registers the new 'displayCustomerAccount' hook.
+ *
+ * @return bool
  */
-function upgrade_module_2_0_11()
+function upgrade_module_2_0_11($module)
 {
     $previousShopContext = Shop::getContext();
     Shop::setContext(Shop::CONTEXT_ALL);
@@ -70,5 +80,17 @@ function upgrade_module_2_0_11()
     }
 
     Shop::setContext($previousShopContext);
+
+    $logger = $module->getLogger()->withName('Upgrade_2_0_11');
+
+    $old_hook_unregistered = $module->unregisterHook('customerAccount');
+    $new_hook_registered = $module->registerHook('displayCustomerAccount');
+
+    if (!($old_hook_unregistered && $new_hook_registered)) {
+        return false;
+    }
+
+    $logger->info('Upgrade to v2.0.11 finished with success');
+
     return true;
 }
