@@ -21,7 +21,7 @@ if (!defined('_PS_VERSION_')) {
 use Cawlop;
 use Context;
 use Order;
-use Symfony\Component\Lock\Factory;
+use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\Lock\Store\FlockStore;
 use WorldlineOP\PrestaShop\Logger\LoggerFactory;
 use WorldlineOP\PrestaShop\Presenter\TransactionPresented;
@@ -66,7 +66,7 @@ class TransactionResponseProcessor
         if ($presentedData->validateOrder) {
             try {
                 $store = new FlockStore();
-                $factory = new Factory($store);
+                $factory = new LockFactory($store);
                 $lock = $factory->createLock($presentedData->payments['merchantReference']);
                 if (!$lock->acquire(true)) {
                     $this->logger->debug('Lock cannot be acquired', ['presentedData' => $presentedData]);

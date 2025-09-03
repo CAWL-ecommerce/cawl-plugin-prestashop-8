@@ -47,7 +47,7 @@ class Cawlop extends PaymentModule
         $this->currencies_mode = 'checkbox';
         parent::__construct();
         $this->bootstrap = true;
-        $this->ps_versions_compliancy = ['min' => '8', 'max' => '8.2.99'];
+        $this->ps_versions_compliancy = ['min' => '8', 'max' => '9.9.99'];
         //@formatter:off
         $this->displayName = $this->l('Cawl Online Payments');
         $this->description = $this->l('This module offers a 1-click integration to start accepting payments and grow your revenues by offering your customers with global and regional payment methods to sell across Europe.');
