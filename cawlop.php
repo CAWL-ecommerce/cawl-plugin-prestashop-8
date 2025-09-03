@@ -40,7 +40,7 @@ class Cawlop extends PaymentModule
     {
         $this->name = 'cawlop';
         $this->author = 'Cawl Online Payments';
-        $this->version = '2.0.10';
+        $this->version = '2.0.11';
         $this->tab = 'payments_gateways';
         //$this->module_key = '089d13d0218de8085259e542483f4438'; TODO: UPDATE MODULE KEY WHEN MODULE IS RELEASING
         $this->currencies = true;
@@ -254,7 +254,7 @@ class Cawlop extends PaymentModule
      *
      * @return string
      */
-    public function hookCustomerAccount($params)
+    public function hookDisplayCustomerAccount($params)
     {
         return $this->display(dirname(__FILE__), 'views/templates/front/hookCustomerAccount.tpl');
     }
