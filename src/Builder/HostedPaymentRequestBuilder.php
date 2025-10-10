@@ -70,18 +70,20 @@ class HostedPaymentRequestBuilder extends AbstractRequestBuilder
         $hostedCheckoutSpecificInput->setReturnUrl(
             $this->context->link->getModuleLink($this->module->name, 'redirect', ['action' => 'redirectReturnHosted'])
         );
+        $productFilterHostedCheckout = new PaymentProductFiltersHostedCheckout();
+
         if (false !== $this->idProduct) {
             $productFilter = new PaymentProductFilter();
             $productFilter->setProducts([(int) $this->idProduct]);
-            $productFilterHostedCheckout = new PaymentProductFiltersHostedCheckout();
             $productFilterHostedCheckout->setRestrictTo($productFilter);
-
-            $excludeMealVoucherFilter = new PaymentProductFilter();
-            $excludeMealVoucherFilter->setProducts([self::MEALVOUCHER_PRODUCT_ID]);
-            $productFilterHostedCheckout->setExclude($excludeMealVoucherFilter);
-
-            $hostedCheckoutSpecificInput->setPaymentProductFilters($productFilterHostedCheckout);
         }
+
+        $excludeMealVoucherFilter = new PaymentProductFilter();
+        $excludeMealVoucherFilter->setProducts([self::MEALVOUCHER_PRODUCT_ID]);
+        $productFilterHostedCheckout->setExclude($excludeMealVoucherFilter);
+
+        $hostedCheckoutSpecificInput->setPaymentProductFilters($productFilterHostedCheckout);
+
         if (false !== $this->tokenValue) {
             $hostedCheckoutSpecificInput->setTokens($this->tokenValue);
         }
