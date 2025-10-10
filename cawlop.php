@@ -18,6 +18,7 @@ require_once 'vendor/autoload.php';
 
 use Monolog\Logger;
 use PrestaShop\ModuleLibServiceContainer\DependencyInjection\ServiceContainer;
+use WorldlineOP\PrestaShop\Utils\Tools as ToolsWorldline;
 
 /**
  * Class Cawlop
@@ -92,12 +93,25 @@ class Cawlop extends PaymentModule
      */
     public function uninstall()
     {
-        Configuration::deleteByName('CAWLOP_ACCOUNT_SETTINGS');
-        Configuration::deleteByName('CAWLOP_ADVANCED_SETTINGS');
-        Configuration::deleteByName('CAWLOP_PAYMENT_METHODS_SETTINGS');
-        Configuration::deleteByName('CAWLOP_SHOW_ADVANCED_SETTINGS');
+        if (parent::uninstall()) {
+            Configuration::deleteByName('CAWLOP_ACCOUNT_SETTINGS');
+            Configuration::deleteByName('CAWLOP_ADVANCED_SETTINGS');
+            Configuration::deleteByName('CAWLOP_PAYMENT_METHODS_SETTINGS');
+            Configuration::deleteByName('CAWLOP_SHOW_ADVANCED_SETTINGS');
+            ToolsWorldline::removeSymfonyCache();
+            return true;
+        }
 
-        return parent::uninstall();
+        return false;
+    }
+
+    public function disable($force_all = false)
+    {
+        if (parent::disable($force_all)) {
+            ToolsWorldline::removeSymfonyCache();
+            return true;
+        }
+        return false;
     }
 
     /**
