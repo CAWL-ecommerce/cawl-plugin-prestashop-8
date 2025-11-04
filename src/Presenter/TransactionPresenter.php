@@ -95,6 +95,11 @@ class TransactionPresenter implements PresenterInterface
                 ))) {
                     try {
                         $payment = $this->merchantClient->payments()->getPayment($paymentDetail->getId());
+                    } catch (\Exception $e) {
+                        $payment = $paymentDetails;
+                    }
+
+                    try {
                         $refunds = $this->merchantClient->refunds()->getRefunds($paymentDetail->getId());
                         $captures = $this->merchantClient->captures()->getCaptures($paymentDetail->getId());
                         $paymentSpecificOutput = $this->getPaymentSpecificOutput(
