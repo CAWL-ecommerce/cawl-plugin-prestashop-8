@@ -111,7 +111,7 @@ class HostedPaymentRequestBuilder extends AbstractRequestBuilder
         }
 
         $cardPaymentMethodSpecificInput = new CardPaymentMethodSpecificInput();
-        if (self::PRODUCT_ID_INTERSOLVE == $this->idProduct) {
+        if (self::PRODUCT_ID_INTERSOLVE == $this->idProduct || self::PRODUCT_ID_PLEDG == $this->idProduct) {
             $cardPaymentMethodSpecificInput->setAuthorizationMode(PaymentSettings::TRANSACTION_TYPE_IMMEDIATE);
         } else {
             $cardPaymentMethodSpecificInput->setAuthorizationMode(
