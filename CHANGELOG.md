@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix order total not being updated when customer adds or removes gift wrapping
 - Change tokenizer preproduction URL to production
 
+## [2.0.16] - 2025-05-12
+### Added
+- Manage exemption for FR markets
+
 ## [2.0.15] - 2025-14-11
 ### Fixed
 - Fix being able to delete default logo when upgrading from earlier version
