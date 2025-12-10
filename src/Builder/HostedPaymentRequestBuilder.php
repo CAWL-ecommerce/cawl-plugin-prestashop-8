@@ -226,19 +226,20 @@ class HostedPaymentRequestBuilder extends AbstractRequestBuilder
                 $gPayThreeDSecure->setChallengeIndicator(self::CHALLENGE_INDICATOR_REQUIRED);
                 $gPayThreeDSecure->setSkipAuthentication(false);
             } elseif ($this->settings->advancedSettings->threeDSExempted) {
+                $gPayThreeDSecure->setSkipAuthentication(false);
                 $threeDSExemptionType = $this->settings->advancedSettings->threeDSExemptedType;
                 $threeDSExemptionValue = $this->settings->advancedSettings->threeDSExemptedValue;
-                $gPayThreeDSecure->setChallengeIndicator(
-                    match ($threeDSExemptionType) {
-                        self::TRANSACTION_RISK_ANALYSIS_EXEMPTION => self::NO_CHALLENGE_REQUESTED_RISK_ANALYSIS_PERFORMED,
-                        self::LOW_VALUE_EXEMPTION => self::NO_CHALLENGE_REQUESTED,
-                    }
-                );
                 $orderTotalInEuros = Tools::getAmountInEuros($this->context->cart->getOrderTotal(),
                     new \Currency($this->context->cart->id_currency));
-                $gPayThreeDSecure->setSkipAuthentication(false);
+
                 if ($threeDSExemptionValue >= $orderTotalInEuros) {
                     $gPayThreeDSecure->setExemptionRequest($threeDSExemptionType);
+                    $gPayThreeDSecure->setChallengeIndicator(
+                        match ($threeDSExemptionType) {
+                            self::TRANSACTION_RISK_ANALYSIS_EXEMPTION => self::NO_CHALLENGE_REQUESTED_RISK_ANALYSIS_PERFORMED,
+                            self::LOW_VALUE_EXEMPTION => self::NO_CHALLENGE_REQUESTED,
+                        }
+                    );
                 }
             }
             $gPayRedirectionData = new RedirectionData();
