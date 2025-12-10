@@ -4,17 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.0.17] - 2025-02-12
+## [2.0.17] - 2025-05-12
+### Added
+- Manage exemption for FR markets
+
+## [2.0.16] - 2025-02-12
 ### Added
 - Add new payment method : Pledg
 ### Fixed
 - Fix iFrame rendering on mobile phones
 - Fix order total not being updated when customer adds or removes gift wrapping
 - Change tokenizer preproduction URL to production
-
-## [2.0.16] - 2025-05-12
-### Added
-- Manage exemption for FR markets
 
 ## [2.0.15] - 2025-14-11
 ### Fixed
