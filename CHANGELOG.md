@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.0.18] - 2025-22-12
 ### Added
 - Group same items in shoppingCart details
+- Fix error when retrieving transaction details on order details page
 
 ## [2.0.17] - 2025-05-12
 ### Added
