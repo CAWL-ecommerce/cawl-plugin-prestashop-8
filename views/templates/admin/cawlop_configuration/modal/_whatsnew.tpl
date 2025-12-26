@@ -14,7 +14,7 @@
 
 <h1>
   {l s='What\'s new in version' mod='cawlop'}
-  2.0.18
+  2.0.19
 </h1>
 <br>
 <ul>
