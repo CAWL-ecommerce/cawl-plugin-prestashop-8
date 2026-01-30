@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.0.21] - 2026-26-01
 ### Improved
 - Improve exemptions capabilities
+### Fixed
+- Fix checkout styling on mobile devices
 
 ## [2.0.20] - 2026-21-01
 ### Fixed
