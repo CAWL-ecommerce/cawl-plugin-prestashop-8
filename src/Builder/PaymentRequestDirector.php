@@ -72,8 +72,11 @@ class PaymentRequestDirector
         }
         $hostedCheckoutRequest->setOrder($this->builder->buildOrder());
 
-        if ($hostedCheckoutRequest->getOrder()->getCustomer()->getLocale() === null) {
-            $hostedCheckoutRequest->getOrder()->getCustomer()->setLocale(
+        $customer = $hostedCheckoutRequest->getOrder()->getCustomer();
+        /** @var string|null $customerLocale */
+        $customerLocale = $customer->getLocale();
+        if ($customerLocale === null) {
+            $customer->setLocale(
                 $hostedCheckoutRequest->getHostedCheckoutSpecificInput()->getLocale()
             );
         }

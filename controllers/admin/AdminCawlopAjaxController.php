@@ -61,6 +61,8 @@ class AdminCawlopAjaxController extends ModuleAdminController
                 'errors' => true,
                 'message' => $e->getMessage(),
             ]));
+
+            return;
         }
 
         $this->context->smarty->assign([

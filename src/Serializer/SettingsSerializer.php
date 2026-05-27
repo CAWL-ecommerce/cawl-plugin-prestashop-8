@@ -11,7 +11,6 @@
  * @copyright 2021 CAWL Online Payments
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
-
 namespace WorldlineOP\PrestaShop\Serializer;
 
 if (!defined('_PS_VERSION_')) {
@@ -50,10 +49,10 @@ class SettingsSerializer
         $objectNormalizer = new ObjectNormalizer(null, null, null, new PhpDocExtractor());
 
         // Your custom denormalizers
-        $advancedSettingsDenormalizer = new AdvancedSettingsDenormalizer();
+        $advancedSettingsDenormalizer = new AdvancedSettingsDenormalizer($objectNormalizer);
         $advancedSettingsDenormalizer->setDenormalizer($objectNormalizer);
 
-        $paymentMethodsSettingsDenormalizer = new PaymentMethodsSettingsDenormalizer();
+        $paymentMethodsSettingsDenormalizer = new PaymentMethodsSettingsDenormalizer($objectNormalizer);
         $paymentMethodsSettingsDenormalizer->setDenormalizer($objectNormalizer);
 
         // Custom encoder

@@ -60,7 +60,7 @@ class CawlopRedirectModuleFrontController extends ModuleFrontController
     }
 
     /**
-     * @return bool
+     * @return void
      *
      * @throws Exception
      */
@@ -85,7 +85,7 @@ class CawlopRedirectModuleFrontController extends ModuleFrontController
             'worldlineopCustomerToken' => Tools::getToken(),
         ]);
 
-        return parent::display();
+        parent::display();
     }
 
     /**
@@ -110,9 +110,9 @@ class CawlopRedirectModuleFrontController extends ModuleFrontController
             /** @var \WorldlineOP\PrestaShop\Repository\TokenRepository $tokenRepository */
             $tokenRepository = $this->module->getService('cawlop.repository.token');
             $token = $tokenRepository->findById($idToken);
-            if (false === $token ||
-                $token->secure_key !== $this->context->customer->secure_key ||
-                (int) $token->id_customer !== $this->context->customer->id
+            if (false === $token
+                || $token->secure_key !== $this->context->customer->secure_key
+                || (int) $token->id_customer !== $this->context->customer->id
             ) {
                 Tools::redirect($this->context->link->getPageLink('order', null, null, ['step' => 3]));
             }
@@ -162,7 +162,9 @@ class CawlopRedirectModuleFrontController extends ModuleFrontController
             $hostedCheckoutResponse = $this->merchantClient->hostedCheckout()
                 ->createHostedCheckout($hostedCheckoutRequest);
         } catch (\OnlinePayments\Sdk\ValidationException $ve) {
-            foreach ($ve->getResponse()->getErrors() as $error) {
+            /** @var \OnlinePayments\Sdk\Domain\ErrorResponse $errorResponse */
+            $errorResponse = $ve->getResponse();
+            foreach ($errorResponse->getErrors() as $error) {
                 $this->logger->error(
                     'Request validation error',
                     ['error' => json_decode($error->toJson(), true)]
@@ -240,6 +242,8 @@ class CawlopRedirectModuleFrontController extends ModuleFrontController
                 ->getHostedCheckout($hostedCheckout->session_id);
         } catch (Exception $e) {
             $this->dieOrderStep3();
+
+            return;
         }
 
         if (self::HC_STATUS_CANCELLED === $hostedCheckoutResponse->getStatus()) {
@@ -340,6 +344,8 @@ class CawlopRedirectModuleFrontController extends ModuleFrontController
         } catch (Exception $e) {
             $this->logger->error('Could not retrieve payment', ['message' => $e->getMessage()]);
             $this->dieOrderStep3();
+
+            return;
         }
 
         $cart = new Cart((int) $createdPayment->id_cart);

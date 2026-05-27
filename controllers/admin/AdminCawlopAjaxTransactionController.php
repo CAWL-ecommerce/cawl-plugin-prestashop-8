@@ -36,11 +36,11 @@ class AdminCawlopAjaxTransactionController extends ModuleAdminController
     {
         $transaction = Tools::getValue('transaction');
         if (!$this->access('edit')) {
-            //@formatter:off
+            // @formatter:off
             $this->context->smarty->assign([
                 'worldlineopAjaxTransactionError' => $this->module->l('You do not have permission to capture funds.', 'AdminCawlopAjaxTransactionController'),
             ]);
-            //@formatter:on
+            // @formatter:on
             die(json_encode([
                 'result_html' => $this->module->hookAdminOrderCommon((int) $transaction['idOrder']),
             ]));
@@ -66,9 +66,9 @@ class AdminCawlopAjaxTransactionController extends ModuleAdminController
             if (in_array($captureResponse->getStatus(), ['CAPTURED', 'CAPTURE_REQUESTED'])) {
                 $this->context->smarty->assign('captureConfirmation', true);
             } else {
-                //@formatter:off
+                // @formatter:off
                 $this->context->smarty->assign('worldlineopAjaxTransactionError', $this->module->l('Capture of funds failed with status ', 'AdminCawlopAjaxTransactionController') . $captureResponse->getStatus());
-                //@formatter:on
+                // @formatter:on
             }
         }
 
@@ -84,11 +84,11 @@ class AdminCawlopAjaxTransactionController extends ModuleAdminController
     {
         $transaction = Tools::getValue('transaction');
         if (!$this->access('edit')) {
-            //@formatter:off
+            // @formatter:off
             $this->context->smarty->assign([
                 'worldlineopAjaxTransactionError' => $this->module->l('You do not have permission to refund funds.', 'AdminCawlopAjaxTransactionController'),
             ]);
-            //@formatter:on
+            // @formatter:on
             die(json_encode([
                 'result_html' => $this->module->hookAdminOrderCommon((int) $transaction['idOrder']),
             ]));
@@ -115,9 +115,9 @@ class AdminCawlopAjaxTransactionController extends ModuleAdminController
             if (in_array($refundResponse->getStatus(), ['REFUNDED', 'REFUND_REQUESTED'])) {
                 $this->context->smarty->assign('refundConfirmation', true);
             } else {
-                //@formatter:off
+                // @formatter:off
                 $this->context->smarty->assign('worldlineopAjaxTransactionError', $this->module->l('Refund of funds failed with status ', 'AdminCawlopAjaxTransactionController') . $refundResponse->getStatus());
-                //@formatter:on
+                // @formatter:on
             }
         }
 
@@ -133,11 +133,11 @@ class AdminCawlopAjaxTransactionController extends ModuleAdminController
     {
         $transaction = Tools::getValue('transaction');
         if (!$this->access('edit')) {
-            //@formatter:off
+            // @formatter:off
             $this->context->smarty->assign([
                 'worldlineopAjaxTransactionError' => $this->module->l('You do not have permission to cancel transactions.', 'AdminCawlopAjaxTransactionController'),
             ]);
-            //@formatter:on
+            // @formatter:on
             die(json_encode([
                 'result_html' => $this->module->hookAdminOrderCommon((int) $transaction['idOrder']),
             ]));

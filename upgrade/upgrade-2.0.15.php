@@ -11,7 +11,6 @@
  * @copyright 2021 CAWL Online Payments
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -26,7 +25,7 @@ const DEFAULT_IFRAME_LOGO_FILENAME = 'cb_visa_mc_amex.svg';
  * - If 'isDefaultIframeLogo' is missing => check if current logo is default and set flag accordingly
  * - Preserve existing values otherwise
  *
- * @param Worldlineop $module
+ * @param Cawlop $module
  *
  * @return bool
  */

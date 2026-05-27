@@ -18,7 +18,6 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use Cawlop;
 use OnlinePayments\Sdk\Domain\CaptureOutput;
 use OnlinePayments\Sdk\Domain\CardPaymentMethodSpecificOutput;
 use OnlinePayments\Sdk\Domain\MobilePaymentMethodSpecificOutput;
@@ -38,14 +37,12 @@ use WorldlineOP\PrestaShop\Utils\Tools;
  */
 class TransactionPresenter implements PresenterInterface
 {
+    public const STATUS_PAYMENT_CREATED = 'CREATED';
     public const STATUS_REFUND_REQUESTED = 'REFUND_REQUESTED';
     public const STATUS_CAPTURE_REQUESTED = 'CAPTURE_REQUESTED';
     public const STATUS_PAYMENT_CAPTURED = 'CAPTURED';
     public const STATUS_PAYMENT_REFUNDED = 'REFUNDED';
     public const STATUS_PAYMENT_REJECTED = 'REJECTED';
-
-    /** @var Cawlop */
-    private $module;
 
     /** @var TransactionRepository */
     private $transactionRepository;
@@ -54,11 +51,9 @@ class TransactionPresenter implements PresenterInterface
     private $merchantClient;
 
     public function __construct(
-        Cawlop $module,
         TransactionRepository $transactionRepository,
         MerchantClient $merchantClient
     ) {
-        $this->module = $module;
         $this->transactionRepository = $transactionRepository;
         $this->merchantClient = $merchantClient;
     }
@@ -73,7 +68,7 @@ class TransactionPresenter implements PresenterInterface
      */
     public function present($idOrder = false)
     {
-        /** @var \WorldlineopTransaction $transaction */
+        /** @var \WorldlineopTransaction|false $transaction */
         $transaction = $this->transactionRepository->findByIdOrder($idOrder);
         if (false === $transaction) {
             throw new \Exception('Cannot find Cawl transaction');
@@ -86,9 +81,9 @@ class TransactionPresenter implements PresenterInterface
             throw new \Exception('Could not retrieve transaction details');
         }
 
-        if ($paymentDetails) {
-            foreach ($paymentDetails->getOperations() as $paymentDetail) {
+        foreach ($paymentDetails->getOperations() as $paymentDetail) {
                 if (!in_array($paymentDetail->getStatus(), array(
+                    self::STATUS_PAYMENT_CREATED,
                     self::STATUS_PAYMENT_REFUNDED,
                     self::STATUS_REFUND_REQUESTED,
                     self::STATUS_PAYMENT_REJECTED
@@ -196,20 +191,25 @@ class TransactionPresenter implements PresenterInterface
                         $psOrderAmountMatch = ($worldlineAmount === $psAmount);
                     }
 
+                    /** @var \OnlinePayments\Sdk\Domain\FraudResults|null $fraudResults */
+                    $fraudResults = $paymentSpecificOutput->getFraudResults();
+                    /** @var \OnlinePayments\Sdk\Domain\SurchargeSpecificOutput|null $surcharge */
                     $surcharge = $payment->getPaymentOutput()->getSurchargeSpecificOutput();
                     $surchargeAmount = 0;
+                    $hasSurcharge = false;
                     if (null !== $surcharge) {
                         $surchargeAmount = Tools::getRoundedAmountFromCents(
-                            $payment->getPaymentOutput()->getSurchargeSpecificOutput()->getSurchargeAmount()->getAmount(),
-                            $payment->getPaymentOutput()->getSurchargeSpecificOutput()->getSurchargeAmount()->getCurrencyCode()
+                            $surcharge->getSurchargeAmount()->getAmount(),
+                            $surcharge->getSurchargeAmount()->getCurrencyCode()
                         );
+                        $hasSurcharge = ((float) $surchargeAmount) !== 0.0;
                     }
                     $transactionData[] = [
                         'orderId' => $idOrder,
                         'payment' => [
                             'amount' => Tools::getRoundedAmountFromCents(
                                 $paymentDetail->getAmountOfMoney()->getAmount(), $currencyCode),
-                            'hasSurcharge' => !($surchargeAmount === 0),
+                            'hasSurcharge' => $hasSurcharge,
                             'surchargeAmount' => $surchargeAmount,
                             'amountWithoutSurcharge' => Tools::getRoundedAmountFromCents(
                                 $payment->getPaymentOutput()->getAmountOfMoney()->getAmount(), $currencyCode),
@@ -219,8 +219,8 @@ class TransactionPresenter implements PresenterInterface
                             'id' => $paymentDetail->getId(),
                             'status' => $paymentDetail->getStatus(),
                             'productId' => $paymentSpecificOutput->getPaymentProductId(),
-                            'fraudResult' => !empty($paymentSpecificOutput->getFraudResults()) ?
-                                $paymentSpecificOutput->getFraudResults()->getFraudServiceResult() : '',
+                            'fraudResult' => $fraudResults !== null ?
+                                $fraudResults->getFraudServiceResult() : '',
                             'liability' => $liability,
                             'exemptionType' => $exemptionType,
                             'errors' => $errors,
@@ -245,7 +245,6 @@ class TransactionPresenter implements PresenterInterface
                     ];
                 }
             }
-        }
 
         return $transactionData;
     }

@@ -84,7 +84,7 @@ class CawlopWebhookModuleFrontController extends ModuleFrontController
         }
 
         if ($cartId) {
-            $cart = new Cart($cartId);
+            $cart = new Cart((int) $cartId);
             if (Validate::isLoadedObject($cart)) {
                 // Initialize complete context for correct tax calculation
                 $currency = new Currency($cart->id_currency);
@@ -141,16 +141,14 @@ class CawlopWebhookModuleFrontController extends ModuleFrontController
      */
     public function respondOK()
     {
-        // check if fastcgi_finish_request is callable
-        if (is_callable('fastcgi_finish_request')) {
-            /*
-             * This works in Nginx but the next approach not
-             */
-            session_write_close();
+        session_write_close();
+        // Apache/FPM path: finish request early so webhook processing runs async
+        if (function_exists('fastcgi_finish_request')) {
             fastcgi_finish_request();
 
             return;
         }
+        // Nginx fallback: flush output buffers and close connection
         ignore_user_abort(true);
         ob_start();
         header('HTTP/1.1 200 OK');

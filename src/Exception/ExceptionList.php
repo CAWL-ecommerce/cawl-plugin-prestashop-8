@@ -11,7 +11,6 @@
  * @copyright 2021 CAWL Online Payments
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
-
 namespace WorldlineOP\PrestaShop\Exception;
 
 if (!defined('_PS_VERSION_')) {
@@ -20,10 +19,10 @@ if (!defined('_PS_VERSION_')) {
 /**
  * Class ExceptionList
  */
-class ExceptionList extends \Exception
+class ExceptionList extends \Exception implements \IteratorAggregate
 {
     /** @var \Exception[] */
-    private $exceptions;
+    private $exceptions = [];
 
     /**
      * @param \Exception[] $exceptions
@@ -44,5 +43,14 @@ class ExceptionList extends \Exception
         }
 
         return $messages;
+    }
+
+    /**
+     * @return \ArrayIterator
+     */
+    #[\ReturnTypeWillChange]
+    public function getIterator()
+    {
+        return new \ArrayIterator($this->exceptions);
     }
 }

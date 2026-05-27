@@ -42,8 +42,8 @@ class AdminCawlopLogsController extends ModuleAdminController
                 }
             }
         }
-        //@formatter:off
+        // @formatter:off
         $this->errors[] = $this->module->l('Log file not found. Make sure logs are enabled', 'AdminCawlopLogsController');
-        //@formatter:on
+        // @formatter:on
     }
 }

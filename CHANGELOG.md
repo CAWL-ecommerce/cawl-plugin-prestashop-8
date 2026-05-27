@@ -4,6 +4,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.30] - 2026-08-05
+### Fixed
+- Fix CB logo
+
+## [2.0.29] - 2026-30-04
+### Fixed
+- Fix one-cent payload total drift
+
+## [2.0.28] - 2026-27-04
+### Added
+- Added module dependencies and compatibility with PrestaShop Validator
+
+## [2.0.27] - 2026-15-04
+### Fixed
+- Remove CREATED operations from the operations display on the order details page
+### Changed
+- Correct display of payment method name for split payment transactions
+
+## [2.0.26] - 2026-06-04
+### Changed
+- Separate shipping costs from product line items in the API request
+- Update plugin title and description
+
+## [2.0.25] - 2026-31-03
+### Added
+- Added: Support of Illicado payment method
+
 ## [2.0.24] - 2026-26-03
 ### Fixed
 - Order incorrectly set to "Payment error" when delayed payment confirmation webhook arrives for an already created order

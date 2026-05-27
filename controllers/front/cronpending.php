@@ -104,7 +104,6 @@ class CawlopCronPendingModuleFrontController extends ModuleFrontController
         }
         /** @var \OnlinePayments\Sdk\Merchant\MerchantClient $merchantClient */
         $merchantClient = $this->module->getService('cawlop.sdk.client');
-        /** @var \WorldlineOP\PrestaShop\Repository\TransactionRepository $transactionRepository */
         $rows = array_map(
             function ($array) {
                 return $array['id_order'];
@@ -137,7 +136,7 @@ class CawlopCronPendingModuleFrontController extends ModuleFrontController
                 $orderHistory = new \OrderHistory();
                 $orderHistory->id_order = (int) $idOrder;
                 try {
-                    $orderHistory->changeIdOrderState(Configuration::get('PS_OS_CANCELED'), $idOrder);
+                    $orderHistory->changeIdOrderState((int) Configuration::get('PS_OS_CANCELED'), (int) $idOrder);
                     $orderHistory->addWithemail();
                 } catch (\Exception $e) {
                     $this->printOrderDebug('Order could not be cancelled');

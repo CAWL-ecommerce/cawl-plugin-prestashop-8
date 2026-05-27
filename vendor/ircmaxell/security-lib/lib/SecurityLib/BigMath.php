@@ -31,7 +31,7 @@ abstract class BigMath {
      * @return \PasswordLib\Core\BigMath A big math instance
      */
     public static function createFromServerConfiguration() {
-        //@codeCoverageIgnoreStart
+        // @codeCoverageIgnoreStart
         if (extension_loaded('gmp')) {
             return new \SecurityLib\BigMath\GMP();
         } elseif (extension_loaded('bcmath')) {
@@ -39,7 +39,7 @@ abstract class BigMath {
         } else {
             return new \SecurityLib\BigMath\PHPMath();
         }
-        //@codeCoverageIgnoreEnd
+        // @codeCoverageIgnoreEnd
     }
 
     /**

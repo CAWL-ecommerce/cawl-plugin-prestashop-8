@@ -62,14 +62,14 @@ class AdminCawlopConfigurationController extends ModuleAdminController
         $this->context->controller->addCSS([$this->module->getPathUri() . '/views/css/config.css']);
         /** @var \WorldlineOP\PrestaShop\Configuration\Entity\Settings $settings */
         $settings = $this->module->getService('cawlop.settings');
-        //@formatter:off
+        // @formatter:off
         Media::addJsDef([
             'worldlineopAjaxToken' => Tools::getAdminTokenLite('AdminCawlopAjax'),
             'genericErrorMessage' => $this->module->l('An error occurred during the process, please try again', 'AdminCawlopConfigurationController'),
             'showWhatsNew' => $settings->advancedSettings->displayWhatsNew === true,
             'copyMessage' => $this->module->l('Copied!', 'AdminCawlopConfigurationController'),
         ]);
-        //@formatter:on
+        // @formatter:on
     }
 
     public function setModals()
@@ -77,14 +77,14 @@ class AdminCawlopConfigurationController extends ModuleAdminController
         $this->context->smarty->assign([
             'loader' => $this->module->getPathUri() . '/views/img/icons/loader.svg',
         ]);
-        //@formatter:off
+        // @formatter:off
         $this->modals[] = [
             'modal_id' => 'worldlineop-modal-whatsnew',
             'modal_class' => 'modal-lg',
             'modal_title' => $this->module->l('Latest version - What\'s new?', 'AdminCawlopConfigurationController'),
             'modal_content' => $this->createTemplate('modal/_loading.tpl')->fetch(),
         ];
-        //@formatter:on
+        // @formatter:on
     }
 
     /**
@@ -145,9 +145,9 @@ class AdminCawlopConfigurationController extends ModuleAdminController
 
             return;
         }
-        //@formatter:off
+        // @formatter:off
         $this->confirmations[] = $this->module->l('Account settings saved successfully.', 'AdminCawlopConfigurationController');
-        //@formatter:on
+        // @formatter:on
     }
 
     /**
@@ -184,15 +184,15 @@ class AdminCawlopConfigurationController extends ModuleAdminController
             return false;
         }
         if ($testResponse->getResult() !== 'OK') {
-            //@formatter:off
+            // @formatter:off
             $this->errors[] = $this->module->l('Please verify your credentials', 'AdminCawlopConfigurationController');
-            //@formatter:on
+            // @formatter:on
 
             return false;
         } else {
-            //@formatter:off
+            // @formatter:off
             $this->confirmations[] = $this->module->l('Account credentials are valid.', 'AdminCawlopConfigurationController');
-            //@formatter:on
+            // @formatter:on
 
             return true;
         }
@@ -232,9 +232,9 @@ class AdminCawlopConfigurationController extends ModuleAdminController
 
             return;
         }
-        //@formatter:off
+        // @formatter:off
         $this->confirmations[] = $this->module->l('Advanced settings saved successfully', 'AdminCawlopConfigurationController');
-        //@formatter:on
+        // @formatter:on
     }
 
     public function processSavePaymentMethodsSettingsForm()
@@ -254,8 +254,8 @@ class AdminCawlopConfigurationController extends ModuleAdminController
         } catch (Exception $e) {
             $this->errors[] = $e->getMessage();
         }
-        //@formatter:off
+        // @formatter:off
         $this->confirmations[] = $this->module->l('Payment methods settings saved successfully', 'AdminCawlopConfigurationController');
-        //@formatter:on
+        // @formatter:on
     }
 }

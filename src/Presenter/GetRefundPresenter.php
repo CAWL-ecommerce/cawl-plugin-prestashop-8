@@ -11,7 +11,6 @@
  * @copyright 2021 CAWL Online Payments
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
-
 namespace WorldlineOP\PrestaShop\Presenter;
 
 if (!defined('_PS_VERSION_')) {
@@ -29,7 +28,7 @@ use WorldlineOP\PrestaShop\Utils\Tools;
 /**
  * Class GetRefundPresenter
  */
-class GetRefundPresenter implements PresenterInterface
+class GetRefundPresenter
 {
     /** @var Cawlop */
     private $module;
@@ -64,7 +63,7 @@ class GetRefundPresenter implements PresenterInterface
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
      */
-    public function present($refundResponse = false, $idShop = false)
+    public function present(RefundResponse $refundResponse, int $idShop): TransactionPresented
     {
         $merchantReferenceFull = $refundResponse->getRefundOutput()->getReferences()->getMerchantReference();
         $merchantReferenceParts = explode('-', $merchantReferenceFull);
@@ -88,29 +87,35 @@ class GetRefundPresenter implements PresenterInterface
         }
         /** @var TransactionRepository $transactionRepository */
         $transactionRepository = $this->module->getService('cawlop.repository.transaction');
-        /** @var \WorldlineopTransaction $transaction */
+        /** @var \WorldlineopTransaction|false $transaction */
         $transaction = $transactionRepository->findByIdOrder($order->id);
-        $merchantReference = substr($refundResponse->getId(), 0, -3);;
-        if (false === $merchantReference) {
+        if (false === $transaction) {
+            $this->logger->error('Could not find transaction', ['merchantReference' => $merchantReferenceFull]);
+
+            return $this->presentedData;
+        }
+        $merchantReference = substr($refundResponse->getId(), 0, -3);
+        if ('' === $merchantReference) {
             $merchantReference = $refundResponse->getId();
         }
         $transactionReference = substr($transaction->reference, 0, -3);
-        if (false === $transactionReference) {
+        if ('' === $transactionReference) {
             $transactionReference = $transaction->reference;
         }
-        if (false === $transaction || ($transactionReference !== $merchantReference && false !== $merchantReference)) {
+        if ($transactionReference !== $merchantReference && '' !== $merchantReference) {
             $this->logger->error('Could not find transaction', ['merchantReference' => $merchantReferenceFull]);
 
             return $this->presentedData;
         }
 
+        $idOrderStateRefund = (int) \Configuration::get('PS_OS_REFUND');
         $this->presentedData->updateStatus = true;
         $this->presentedData->order['ids'] = Tools::getOrderIdsByIdCart($order->id_cart);
-        $this->presentedData->idOrderState = \Configuration::get('PS_OS_REFUND');
-        $this->presentedData->sendMail = \Configuration::getGlobalValue('WOP_AWAITING_CAPTURE_STATUS_ID') == \Configuration::get('PS_OS_REFUND');
+        $this->presentedData->idOrderState = $idOrderStateRefund;
+        $this->presentedData->sendMail = \Configuration::getGlobalValue('WOP_AWAITING_CAPTURE_STATUS_ID') == $idOrderStateRefund;
         $this->presentedData->payments['hasPayments'] = $order->getOrderPayments();
         $this->presentedData->payments['merchantReference'] = $merchantReference;
-        $this->logger->debug('Refund event. Update order state to ID ' . \Configuration::get('PS_OS_REFUND'));
+        $this->logger->debug('Refund event. Update order state to ID ' . $idOrderStateRefund);
 
         return $this->presentedData;
     }

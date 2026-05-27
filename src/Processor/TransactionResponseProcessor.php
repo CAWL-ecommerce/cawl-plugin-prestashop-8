@@ -19,7 +19,6 @@ if (!defined('_PS_VERSION_')) {
 }
 
 use Cawlop;
-use Context;
 use Order;
 use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\Lock\Store\FlockStore;
@@ -116,7 +115,7 @@ class TransactionResponseProcessor
         } elseif ($presentedData->updateStatus) {
             foreach ($presentedData->order['ids'] as $idOrder) {
                 $order = new Order((int) $idOrder);
-                if (!count($order->getHistory(Context::getContext()->language->id, $presentedData->idOrderState))) {
+                if (!count($order->getHistory($this->module->getModuleContext()->language->id, $presentedData->idOrderState))) {
                     $orderHistory = new \OrderHistory();
                     $orderHistory->id_order = (int) $idOrder;
                     try {

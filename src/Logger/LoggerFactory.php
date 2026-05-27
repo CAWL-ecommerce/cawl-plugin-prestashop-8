@@ -11,7 +11,6 @@
  * @copyright 2021 CAWL Online Payments
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
-
 namespace WorldlineOP\PrestaShop\Logger;
 
 if (!defined('_PS_VERSION_')) {
@@ -31,9 +30,6 @@ class LoggerFactory
     /** @var Logger */
     private $logger;
 
-    /** @var Settings */
-    private $settings;
-
     /**
      * Logger constructor.
      *
@@ -42,7 +38,6 @@ class LoggerFactory
     public function __construct(Settings $settings)
     {
         $this->logger = new Logger('module');
-        $this->settings = $settings;
         $level = $settings->advancedSettings->logsEnabled === true ? Logger::DEBUG : Logger::INFO;
         $fileHandler = new RotatingFileHandler(
             _PS_MODULE_DIR_ . 'cawlop/' . sprintf('logs/%s.log', Tools::hash(_PS_MODULE_DIR_)),

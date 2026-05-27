@@ -137,9 +137,6 @@ class Tools
     public static function getAmountInCents($amount, $isoCurrency)
     {
         $pow = self::getCurrencyDecimalByIso($isoCurrency);
-        if (false === $pow) {
-            return $amount;
-        }
 
         return (string) Decimal::multiply((string) $amount, (string) pow(10, $pow))->getIntegerPart();
     }
@@ -153,9 +150,6 @@ class Tools
     public static function getRoundedAmountInCents($amount, $isoCurrency)
     {
         $pow = self::getCurrencyDecimalByIso($isoCurrency);
-        if (false === $pow) {
-            return $amount;
-        }
 
         return (string) Decimal::multiply((string) \Tools::ps_round($amount, $pow), (string) pow(10, $pow))->getIntegerPart();
     }
@@ -171,11 +165,8 @@ class Tools
     public static function getRoundedAmountFromCents($amount, $isoCurrency)
     {
         $pow = self::getCurrencyDecimalByIso($isoCurrency);
-        if (false === $pow) {
-            return $amount;
-        }
 
-        return number_format((string) Decimal::divide((string) $amount, (string) pow(10, $pow)), $pow, '.', '');
+        return number_format((float) (string) Decimal::divide((string) $amount, (string) pow(10, $pow)), $pow, '.', '');
     }
 
     /**
@@ -187,9 +178,6 @@ class Tools
     public static function getRoundedAmount($amount, $isoCurrency)
     {
         $pow = self::getCurrencyDecimalByIso($isoCurrency);
-        if (false === $pow) {
-            return $amount;
-        }
 
         return \Tools::ps_round($amount, $pow);
     }
@@ -268,7 +256,7 @@ class Tools
      * @param float $amount
      * @param \Currency $currencyFrom
      *
-     * @return float
+     * @return string
      *
      * @throws \Exception
      */

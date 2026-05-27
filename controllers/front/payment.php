@@ -59,12 +59,12 @@ class CawlopPaymentModuleFrontController extends ModuleFrontController
                     'totalCartPost' => $totalCartPost->getIntegerPart(),
                 ]
             );
-            //@formatter:off
+            // @formatter:off
             die(json_encode([
                 'success' => false,
                 'message' => $this->module->l('An error occurred while processing the payment.', 'payment'),
             ]));
-            //@formatter:on
+            // @formatter:on
         }
 
         /** @var \OnlinePayments\Sdk\Merchant\MerchantClient $merchantClient */
@@ -74,12 +74,12 @@ class CawlopPaymentModuleFrontController extends ModuleFrontController
                 ->getHostedTokenization($hostedTokenizationId);
         } catch (Exception $e) {
             $this->logger->error($e->getMessage(), ['hostedTokenizationId' => $hostedTokenizationId]);
-            //@formatter:off
+            // @formatter:off
             die(json_encode([
                 'success' => false,
                 'message' => $this->module->l('An error occurred while processing the payment.', 'payment'),
             ]));
-            //@formatter:on
+            // @formatter:on
         }
 
         $this->logger->debug(
@@ -90,8 +90,8 @@ class CawlopPaymentModuleFrontController extends ModuleFrontController
         $ccForm = Tools::getValue('ccForm');
 
         if (false === $hostedTokenizationResponse->getToken()->getIsTemporary() && (
-                self::TOKEN_STATUS_CREATED === $hostedTokenizationResponse->getTokenStatus() ||
-                self::TOKEN_STATUS_UPDATED === $hostedTokenizationResponse->getTokenStatus())
+                self::TOKEN_STATUS_CREATED === $hostedTokenizationResponse->getTokenStatus()
+                || self::TOKEN_STATUS_UPDATED === $hostedTokenizationResponse->getTokenStatus())
         ) {
             /** @var TokenRepository $tokenRepository */
             $tokenRepository = $this->module->getService('cawlop.repository.token');
@@ -102,7 +102,7 @@ class CawlopPaymentModuleFrontController extends ModuleFrontController
             $cardData = $hostedTokenizationResponse->getToken()->getCard()->getData()->getCardWithoutCvv();
             $token->id_customer = (int) $this->context->customer->id;
             $token->id_shop = (int) $this->context->shop->id;
-            $token->product_id = PSQL($hostedTokenizationResponse->getToken()->getPaymentProductId());
+            $token->product_id = (string) $hostedTokenizationResponse->getToken()->getPaymentProductId();
             $token->card_number = pSQL($cardData->getCardNumber());
             $token->expiry_date = pSQL($cardData->getExpiryDate());
             $token->value = pSQL($tokenId);
@@ -120,20 +120,20 @@ class CawlopPaymentModuleFrontController extends ModuleFrontController
             $this->logger->debug('IframeHostedTokenizationResponse', ['json' => json_decode($paymentResponse->toJson(), true)]);
         } catch (ResponseException $re) {
             $this->logger->debug('IframeHostedTokenizationResponse', ['json' => json_decode($re->getResponse()->toJson(), true)]);
-            //@formatter:off
+            // @formatter:off
             die(json_encode([
                 'success' => false,
                 'message' => $this->module->l('An error occurred while processing the payment.', 'payment'),
             ]));
-            //@formatter:on
+            // @formatter:on
         } catch (Exception $e) {
-            $this->logger->debug('IframeHostedTokenizationResponse', ['json' => json_decode($e->getResponse()->toJson(), true)]);
-            //@formatter:off
+            $this->logger->debug('IframeHostedTokenizationResponse', ['message' => $e->getMessage()]);
+            // @formatter:off
             die(json_encode([
                 'success' => false,
                 'message' => $this->module->l('An error occurred while processing the payment.', 'payment'),
             ]));
-            //@formatter:on
+            // @formatter:on
         }
         /** @var \WorldlineOP\PrestaShop\Repository\CreatedPaymentRepository $createdPaymentRepository */
         $createdPaymentRepository = $this->module->getService('cawlop.repository.created_payment');
@@ -167,12 +167,12 @@ class CawlopPaymentModuleFrontController extends ModuleFrontController
             $createdPaymentRepository->save($createdPayment);
         } catch (Exception $e) {
             $this->logger->error('Cannot save CreatedPayment object', ['message' => $e->getMessage()]);
-            //@formatter:off
+            // @formatter:off
             $return = [
                 'success' => false,
                 'message' => $this->module->l('An unexpected error occurred. Please contact our customer service.', 'payment'),
             ];
-            //@formatter:on
+            // @formatter:on
         }
         die(json_encode($return));
     }

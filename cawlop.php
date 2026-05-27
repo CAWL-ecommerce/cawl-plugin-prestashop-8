@@ -41,18 +41,18 @@ class Cawlop extends PaymentModule
     {
         $this->name = 'cawlop';
         $this->author = 'Cawl Online Payments';
-        $this->version = '2.0.24';
+        $this->version = '2.0.30';
         $this->tab = 'payments_gateways';
-        //$this->module_key = '089d13d0218de8085259e542483f4438'; TODO: UPDATE MODULE KEY WHEN MODULE IS RELEASING
+        // $this->module_key = '089d13d0218de8085259e542483f4438'; TODO: UPDATE MODULE KEY WHEN MODULE IS RELEASING
         $this->currencies = true;
         $this->currencies_mode = 'checkbox';
         parent::__construct();
         $this->bootstrap = true;
         $this->ps_versions_compliancy = ['min' => '8', 'max' => '9.9.99'];
-        //@formatter:off
-        $this->displayName = $this->l('Cawl Online Payments');
-        $this->description = $this->l('This module offers a 1-click integration to start accepting payments and grow your revenues by offering your customers with global and regional payment methods to sell across Europe.');
-        //@formatter:on
+        // @formatter:off
+        $this->displayName = $this->l('CAWL e-commerce');
+        $this->description = $this->l('This module offers a 1-click integration to start accepting payments with the Cawl e-commerce APIs. Grow your revenues by offering your customers with global and regional payment methods to sell across Europe.');
+        // @formatter:on
         $this->theme = Tools::version_compare(_PS_VERSION_, '1.7.7', '>=') ? 'new-theme' : 'legacy';
     }
 
@@ -71,10 +71,9 @@ class Cawlop extends PaymentModule
         try {
             $installer->run();
         } catch (\WorldlineOP\PrestaShop\Exception\ExceptionList $list) {
+            /** @var \Exception $item */
             foreach ($list as $item) {
-                /** @var \WorldlineOP\PrestaShop\Exception\ExceptionList $e */
-                $e = $item;
-                $installer->getLogger()->error(sprintf('%s - File: %s - Line: %s - Trace: %s', $e->getMessage(), $e->getFile(), $e->getLine(), $e->getTraceAsString()));
+                $installer->getLogger()->error(sprintf('%s - File: %s - Line: %s - Trace: %s', $item->getMessage(), $item->getFile(), $item->getLine(), $item->getTraceAsString()));
 
                 return false;
             }
@@ -151,7 +150,23 @@ class Cawlop extends PaymentModule
      */
     public function getContent()
     {
-        Tools::redirectAdmin(Context::getContext()->link->getAdminLink('AdminCawlopConfiguration'));
+        $mboInstaller = new \Prestashop\ModuleLibMboInstaller\DependencyBuilder($this);
+        if (!$mboInstaller->areDependenciesMet())
+        {
+            $dependencies = $mboInstaller->handleDependencies();
+            $this->smarty->assign('dependencies', $dependencies);
+            return $this->display(__FILE__, 'views/templates/admin/dependency_builder.tpl');
+        }
+
+        Tools::redirectAdmin($this->context->link->getAdminLink('AdminCawlopConfiguration'));
+    }
+
+    /**
+     * @return Context
+     */
+    public function getModuleContext()
+    {
+        return $this->context;
     }
 
     public function hookActionFrontControllerSetMedia()
@@ -214,21 +229,25 @@ class Cawlop extends PaymentModule
     public function hookDisplayBackOfficeFooter()
     {
         if (Tools::getValue('controller') == 'AdminCawlopConfiguration') {
-            return '
-                <script type="text/javascript" src="' . $this->getPathUri() . 'views/js/translations.js"></script>
-                <script type="text/javascript" src="' . $this->getPathUri() . 'views/js/config.js"></script>
-                <script type="text/javascript" src="' . $this->getPathUri() . 'views/js/jquery.custom-file-input.js"></script>
-            ';
+            $this->context->smarty->assign('cawlopModulePathUri', $this->getPathUri());
+
+            return $this->display(dirname(__FILE__), 'views/templates/admin/hookDisplayBackOfficeFooter.tpl');
         }
 
         return '';
     }
 
     /**
-     * @return array
+     * @param array $params
+     *
+     * @return \PrestaShop\PrestaShop\Core\Payment\PaymentOption[]
      */
-    public function hookPaymentOptions()
+    public function hookPaymentOptions($params)
     {
+        if (!$this->active) {
+            return [];
+        }
+
         try {
             /** @var \WorldlineOP\PrestaShop\Presenter\PaymentOptionsPresenter $paymentOptionsPresenter */
             $paymentOptionsPresenter = $this->getService('cawlop.payment.presenter');
@@ -238,7 +257,10 @@ class Cawlop extends PaymentModule
             return [];
         }
 
-        return $paymentOptionsPresenter->present();
+        /** @var \PrestaShop\PrestaShop\Core\Payment\PaymentOption[] $options */
+        $options = $paymentOptionsPresenter->present();
+
+        return $options;
     }
 
     /**
@@ -283,12 +305,17 @@ class Cawlop extends PaymentModule
     public function hookAdminOrderCommon($idOrder)
     {
         $order = new Order((int) $idOrder);
-        if (!Validate::isLoadedObject($order)/* || $order->module !== $this->name*/) {
+        if (!Validate::isLoadedObject($order)) {
             throw new Exception('Cannot load order');
         }
 
         if ($order->id_shop != $this->context->shop->id || Shop::getContext() !== Shop::CONTEXT_SHOP) {
-            return $this->displayError(sprintf($this->l('Please change shop context to shop ID %d'), $order->id_shop));
+            $this->context->smarty->assign([
+                'worldlineopError' => sprintf($this->l('Please change shop context to shop ID %d'), $order->id_shop),
+                'worldlineopTheme' => '',
+            ]);
+
+            return $this->display(dirname(__FILE__), 'views/templates/admin/hookAdminOrder_container.tpl');
         }
         try {
             /** @var \WorldlineOP\PrestaShop\Presenter\TransactionPresenter $transactionPresenter */
@@ -297,14 +324,19 @@ class Cawlop extends PaymentModule
             $settingsPresenter = $this->getService('cawlop.settings.presenter');
 
             $this->context->smarty->assign([
+                'worldlineopError' => '',
+                'worldlineopTheme' => $this->theme,
                 'transactionsData' => $transactionPresenter->present($idOrder),
                 'settingsData' => $settingsPresenter->present(),
             ]);
         } catch (Exception $e) {
-            return $this->displayError($e->getMessage());
+            $this->context->smarty->assign([
+                'worldlineopError' => $e->getMessage(),
+                'worldlineopTheme' => '',
+            ]);
         }
 
-        return $this->display(dirname(__FILE__), 'views/templates/admin/hookAdminOrder_' . $this->theme . '.tpl');
+        return $this->display(dirname(__FILE__), 'views/templates/admin/hookAdminOrder_container.tpl');
     }
 
     /**
@@ -319,15 +351,10 @@ class Cawlop extends PaymentModule
         }
 
         try {
-            $html = $this->hookAdminOrderCommon(Tools::getValue('id_order'));
+            return $this->hookAdminOrderCommon(Tools::getValue('id_order'));
         } catch (Exception $e) {
             return '';
         }
-        $this->context->smarty->assign([
-            'html' => $html,
-        ]);
-
-        return $this->display(dirname(__FILE__), 'views/templates/admin/hookAdminOrder_container.tpl');
     }
 
     /**
@@ -342,15 +369,10 @@ class Cawlop extends PaymentModule
         }
 
         try {
-            $html = $this->hookAdminOrderCommon(Tools::getValue('id_order'));
+            return $this->hookAdminOrderCommon(Tools::getValue('id_order'));
         } catch (Exception $e) {
             return '';
         }
-        $this->context->smarty->assign([
-            'html' => $html,
-        ]);
-
-        return $this->display(dirname(__FILE__), 'views/templates/admin/hookAdminOrder_container.tpl');
     }
 
     /**
@@ -370,13 +392,13 @@ class Cawlop extends PaymentModule
         }
         /** @var \WorldlineOP\PrestaShop\Repository\TransactionRepository $transactionRepository */
         $transactionRepository = $this->getService('cawlop.repository.transaction');
-        /** @var WorldlineopTransaction $transaction */
+        /** @var WorldlineopTransaction|false $transaction */
         $transaction = $transactionRepository->findByIdOrder($order->id);
         if (false === $transaction) {
             return '';
         }
         $transactionId = substr($transaction->reference, 0, -3);
-        if (false === $transactionId) {
+        if ('' === $transactionId) {
             $transactionId = $transaction->reference;
         }
         $this->context->smarty->assign([
@@ -389,7 +411,7 @@ class Cawlop extends PaymentModule
     /**
      * @param mixed[] $params
      *
-     * @return void
+     * @return string
      */
     public function hookDisplayAdminProductsExtra($params)
     {

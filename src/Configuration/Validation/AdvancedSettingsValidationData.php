@@ -11,7 +11,6 @@
  * @copyright 2021 CAWL Online Payments
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
-
 namespace WorldlineOP\PrestaShop\Configuration\Validation;
 
 use Symfony\Component\Validator\Constraints as Assert;
@@ -31,7 +30,7 @@ class AdvancedSettingsValidationData extends AbstractValidationData
      */
     public function getValidationData($array)
     {
-        //@formatter:off
+        // @formatter:off
         $constraints = [
             'testEndpoint' => [
                 new Assert\Url([
@@ -52,7 +51,7 @@ class AdvancedSettingsValidationData extends AbstractValidationData
                 ]),
             ],
         ];
-        //@formatter:on
+        // @formatter:on
 
         $arrayToValidate = array_intersect_key($array, $constraints);
         $validationConstraints = array_intersect_key($constraints, $array);

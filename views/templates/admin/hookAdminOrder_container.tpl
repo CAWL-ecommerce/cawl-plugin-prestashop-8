@@ -13,7 +13,13 @@
  *}
 
 <div id="worldlineop-admin-order-container">
-  {$html}
+  {if $worldlineopError}
+    <div class="alert alert-danger">{$worldlineopError|escape:'htmlall':'UTF-8'}</div>
+  {elseif $worldlineopTheme === 'new-theme'}
+    {include file='module:cawlop/views/templates/admin/hookAdminOrder_new-theme.tpl'}
+  {elseif $worldlineopTheme === 'legacy'}
+    {include file='module:cawlop/views/templates/admin/hookAdminOrder_legacy.tpl'}
+  {/if}
 </div>
 {literal}
   <script type="text/javascript">

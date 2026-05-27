@@ -14,11 +14,11 @@
 
 <h1>
   {l s='What\'s new in version' mod='cawlop'}
-  2.0.24
+  2.0.30
 </h1>
 <br>
 <ul>
-  <li>{l s='Fix order incorrectly set to Payment error when delayed payment confirmation webhook arrives for an already created order' mod='cawlop'}</li>
+  <li>{l s='Fixed CB logo' mod='cawlop'}</li>
 </ul>
 <br>
 <hr>

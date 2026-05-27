@@ -17,32 +17,13 @@ namespace WorldlineOP\PrestaShop\Repository;
 if (!defined('_PS_VERSION_')) {
     exit;
 }
-use Db;
-
 /**
  * Class HostedCheckoutRepository
  */
 class HostedCheckoutRepository
 {
-    /** @var Db */
-    private $db;
-
     /** @var array */
-    private $cache;
-
-    /**
-     * HostedCheckoutRepository constructor.
-     *
-     * @param Db $db
-     */
-    public function __construct(?Db $db = null)
-    {
-        if (null === $db) {
-            $this->db = Db::getInstance();
-        } else {
-            $this->db = $db;
-        }
-    }
+    private $cache = [];
 
     /**
      * @param string $checksum

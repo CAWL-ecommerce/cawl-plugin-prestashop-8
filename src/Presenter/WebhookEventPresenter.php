@@ -11,7 +11,6 @@
  * @copyright 2021 CAWL Online Payments
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
-
 namespace WorldlineOP\PrestaShop\Presenter;
 
 if (!defined('_PS_VERSION_')) {
@@ -24,10 +23,11 @@ use WorldlineOP\PrestaShop\Logger\LoggerFactory;
 /**
  * Class TransactionPresenter
  */
-class WebhookEventPresenter implements PresenterInterface
+class WebhookEventPresenter
 {
     public const CVCO_PRODUCT_ID = 5403;
     public const MEALVOUCHER_PRODUCT_ID = 5402;
+    public const ILLICADO_PRODUCT_ID = 3112;
     public const EVENTS_PAYMENT_AUTHORIZED = [
         'payment.pending_approval',
         'payment.pending_completion',
@@ -84,15 +84,15 @@ class WebhookEventPresenter implements PresenterInterface
     }
 
     /**
-     * @param WebhooksEvent|bool $event
-     * @param int|bool $idShop
+     * @param WebhooksEvent $event
+     * @param int $idShop
      *
      * @return TransactionPresented
      *
      * @throws \PrestaShopException
      * @throws \PrestaShop\Decimal\Exception\DivisionByZeroException
      */
-    public function present($event = false, $idShop = false)
+    public function present(WebhooksEvent $event, int $idShop)
     {
         $paymentEvents = array_merge(
             self::EVENTS_PAYMENT_AUTHORIZED,
@@ -118,15 +118,36 @@ class WebhookEventPresenter implements PresenterInterface
      */
     private function shouldHandleEvent($event)
     {
-        $payment = $event->getPayment() ?: null;
-        $paymentOutput = $payment ? $payment->getPaymentOutput() : null;
-        $redirectMethodSpecificInput = $paymentOutput ? $paymentOutput->getRedirectPaymentMethodSpecificOutput() : null;
-        $paymentProductId = $redirectMethodSpecificInput ? $redirectMethodSpecificInput->getPaymentProductId() : null;
-        $amountOfMoney = $paymentOutput->getAmountOfMoney() ? $paymentOutput->getAmountOfMoney()->getAmount() : null;
-        $acquiredAmount = $paymentOutput->getAcquiredAmount() ? $paymentOutput->getAcquiredAmount()->getAmount() : null;
+        /** @var \OnlinePayments\Sdk\Domain\PaymentResponse|null $payment */
+        $payment = $event->getPayment();
+        if (empty($payment)) {
+            return true;
+        }
+        /** @var \OnlinePayments\Sdk\Domain\PaymentOutput|null $paymentOutput */
+        $paymentOutput = $payment->getPaymentOutput();
+        if (empty($paymentOutput)) {
+            return true;
+        }
+        /** @var \OnlinePayments\Sdk\Domain\RedirectPaymentMethodSpecificOutput|null $redirectMethodSpecificInput */
+        $redirectMethodSpecificInput = $paymentOutput->getRedirectPaymentMethodSpecificOutput();
+        if (empty($redirectMethodSpecificInput)) {
+            // Not a redirect payment (card, mobile, token) — no product-specific amount guard needed
+            return true;
+        }
+        $paymentProductId = $redirectMethodSpecificInput->getPaymentProductId();
 
-        if ($paymentProductId === self::CVCO_PRODUCT_ID || $paymentProductId === self::MEALVOUCHER_PRODUCT_ID) {
-            return $amountOfMoney && $acquiredAmount && ($amountOfMoney === $acquiredAmount);
+        if ($paymentProductId === self::CVCO_PRODUCT_ID
+            || $paymentProductId === self::MEALVOUCHER_PRODUCT_ID
+            || $paymentProductId === self::ILLICADO_PRODUCT_ID) {
+            /** @var \OnlinePayments\Sdk\Domain\AmountOfMoney|null $amountOfMoney */
+            $amountOfMoney = $paymentOutput->getAmountOfMoney();
+            /** @var \OnlinePayments\Sdk\Domain\AmountOfMoney|null $acquiredAmount */
+            $acquiredAmount = $paymentOutput->getAcquiredAmount();
+            if (empty($amountOfMoney) || empty($acquiredAmount)) {
+                return true;
+            }
+
+            return $amountOfMoney->getAmount() === $acquiredAmount->getAmount();
         }
 
         return true;

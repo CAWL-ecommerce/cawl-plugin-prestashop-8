@@ -11,7 +11,6 @@
  * @copyright 2021 CAWL Online Payments
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
-
 namespace WorldlineOP\PrestaShop\Presenter;
 
 if (!defined('_PS_VERSION_')) {
@@ -91,13 +90,13 @@ class ModuleConfigurationPresenter implements PresenterInterface
                 'module' => sprintf(__PS_BASE_URI__ . 'modules/%s/', $this->module->name),
                 'img' => sprintf(__PS_BASE_URI__ . 'modules/%s/views/img/', $this->module->name),
                 'controllers' => [
-                    'webhooks' => \Context::getContext()->link->getModuleLink($this->module->name, 'webhook', []),
-                    'captureCron' => self::CAPTURE_CRON . \Context::getContext()->link->getModuleLink(
+                    'webhooks' => $this->module->getModuleContext()->link->getModuleLink($this->module->name, 'webhook', []),
+                    'captureCron' => self::CAPTURE_CRON . $this->module->getModuleContext()->link->getModuleLink(
                         $this->module->name,
                         'croncapture',
                         ['secure_key' => Tools::hash($this->module->getLocalPath()), 'ajax' => 1, 'action' => 'runcron']
                     ),
-                    'pendingCron' => self::PENDING_CRON . \Context::getContext()->link->getModuleLink(
+                    'pendingCron' => self::PENDING_CRON . $this->module->getModuleContext()->link->getModuleLink(
                         $this->module->name,
                         'cronpending',
                         ['secure_key' => Tools::hash($this->module->getLocalPath()), 'ajax' => 1, 'action' => 'runcron']
@@ -116,7 +115,7 @@ class ModuleConfigurationPresenter implements PresenterInterface
                 'SAFETY_DELAY_MIN' => PaymentSettings::SAFETY_DELAY_MIN,
                 'SAFETY_DELAY_MAX' => PaymentSettings::SAFETY_DELAY_MAX,
             ],
-            'statuses' => OrderState::getOrderStates(\Context::getContext()->employee->id_lang),
+            'statuses' => OrderState::getOrderStates($this->module->getModuleContext()->employee->id_lang),
             'defaultStatuses' => \Configuration::getMultiple([
                 'PS_OS_PAYMENT',
                 'WOP_PENDING_ORDER_STATUS_ID',
@@ -185,10 +184,10 @@ class ModuleConfigurationPresenter implements PresenterInterface
     /**
      * Mask a secret field
      *
-     * @param string $input
+     * @param string|null $input
      * @return string
      */
-    private function maskString(string $input): string
+    private function maskString(?string $input): string
     {
         if (empty($input)) {
             return '';

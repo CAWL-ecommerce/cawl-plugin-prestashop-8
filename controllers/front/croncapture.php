@@ -146,8 +146,8 @@ class CawlopCronCaptureModuleFrontController extends ModuleFrontController
             }
             /** @var \WorldlineOP\PrestaShop\Configuration\Entity\Settings $settings */
             $settings = $shopsSettings[$order->id_shop];
-            if (PaymentSettings::TRANSACTION_TYPE_IMMEDIATE === $settings->advancedSettings->paymentSettings->transactionType ||
-                0 === $settings->advancedSettings->paymentSettings->captureDelay
+            if (PaymentSettings::TRANSACTION_TYPE_IMMEDIATE === $settings->advancedSettings->paymentSettings->transactionType
+                || 0 === $settings->advancedSettings->paymentSettings->captureDelay
             ) {
                 $this->printOrderDebug('Capture does not need or cannot be made');
                 continue;
@@ -165,7 +165,7 @@ class CawlopCronCaptureModuleFrontController extends ModuleFrontController
                 $this->printOrderDebug('Transaction is older than 32 days');
                 continue;
             }
-            /** @var WorldlineopTransaction $transaction */
+            /** @var WorldlineopTransaction|false $transaction */
             $transaction = $transactionRepository->findByIdOrder((int) $idOrder);
             if (false === $transaction) {
                 $this->printOrderDebug('Cannot find transaction');

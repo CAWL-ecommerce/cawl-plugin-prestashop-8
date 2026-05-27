@@ -11,7 +11,6 @@
  * @copyright 2021 CAWL Online Payments
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
-
 namespace WorldlineOP\PrestaShop\Presenter;
 
 if (!defined('_PS_VERSION_')) {
@@ -356,7 +355,10 @@ class ShoppingCartPresenter implements PresenterInterface
         if (abs($totalCalculated - $totalCart) < 0.001) {
             return;
         }
-        $diff = Tools::getRoundedAmount($totalCalculated - $totalCart, $this->cartCurrencyIso);
+
+        $factor = 10 ** Tools::getCurrencyDecimalByIso($this->cartCurrencyIso);
+        $diff = (int) round(($totalCalculated - $totalCart) * $factor) / $factor;
+
         $productRows[0]['totalWithTax'] -= $diff;
         $productRows[0]['productPrice'] -= $diff;
     }

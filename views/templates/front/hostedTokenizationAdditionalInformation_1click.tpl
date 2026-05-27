@@ -18,16 +18,16 @@
     <ul>
       <li>
         {l s='Initial total:' mod='cawlop'}
-        {$tokenSurcharge.amountWithoutSurcharge|escape:'htmlall':'UTF-8'} {$tokenSurcharge.currencyIso}
+        {$tokenSurcharge.amountWithoutSurcharge|escape:'htmlall':'UTF-8'} {$tokenSurcharge.currencyIso|escape:'htmlall':'UTF-8'}
       </li>
       <li>
         {l s='Surcharge amount:' mod='cawlop'}
-        {$tokenSurcharge.surchargeAmount|escape:'htmlall':'UTF-8'} {$tokenSurcharge.currencyIso}
+        {$tokenSurcharge.surchargeAmount|escape:'htmlall':'UTF-8'} {$tokenSurcharge.currencyIso|escape:'htmlall':'UTF-8'}
       </li>
       <li>
         <b>
           {l s='Total amount with surcharge:' mod='cawlop'}
-          {$tokenSurcharge.amountWithSurcharge|escape:'htmlall':'UTF-8'} {$tokenSurcharge.currencyIso}
+          {$tokenSurcharge.amountWithSurcharge|escape:'htmlall':'UTF-8'} {$tokenSurcharge.currencyIso|escape:'htmlall':'UTF-8'}
         </b>
       </li>
     </ul>

@@ -128,6 +128,7 @@ class PaymentRequestBuilder extends AbstractRequestBuilder
                             match ($threeDSExemptedType) {
                                 self::TRANSACTION_RISK_ANALYSIS_EXEMPTION => self::NO_CHALLENGE_REQUESTED_RISK_ANALYSIS_PERFORMED,
                                 self::LOW_VALUE_EXEMPTION => self::NO_CHALLENGE_REQUESTED,
+                                default => self::NO_CHALLENGE_REQUESTED,
                             }
                         );
                     }

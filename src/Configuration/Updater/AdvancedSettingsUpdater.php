@@ -25,7 +25,7 @@ use WorldlineOP\PrestaShop\Configuration\Entity\AdvancedSettings;
  */
 class AdvancedSettingsUpdater extends SettingsUpdater
 {
-    protected function serialize()
+    protected function serializeSettings(): void
     {
         $this->json = $this->serializer->serialize($this->settings->advancedSettings, 'json');
     }
