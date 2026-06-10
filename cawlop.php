@@ -41,7 +41,7 @@ class Cawlop extends PaymentModule
     {
         $this->name = 'cawlop';
         $this->author = 'Cawl Online Payments';
-        $this->version = '2.0.30';
+        $this->version = '2.0.31';
         $this->tab = 'payments_gateways';
         // $this->module_key = '089d13d0218de8085259e542483f4438'; TODO: UPDATE MODULE KEY WHEN MODULE IS RELEASING
         $this->currencies = true;
@@ -416,6 +416,29 @@ class Cawlop extends PaymentModule
     public function hookDisplayAdminProductsExtra($params)
     {
         $idProduct = (int) $params['id_product'];
+
+        // PS 8.1+: editable field lives in the dedicated CAWL tab (hookActionProductFormBuilderModifier).
+        // Show read-only summary here.
+        if (Tools::version_compare(_PS_VERSION_, '8.1.0', '>=')) {
+            $twig = method_exists($this, 'getTwig') ? $this->getTwig() : $this->get('twig');
+            if (!$twig) {
+                return '';
+            }
+
+            $typeLabels = [
+                \WorldlineOP\PrestaShop\Builder\HostedPaymentRequestBuilder::GIFT_CARD_PRODUCT_TYPE_NONE => $this->l('None'),
+                \WorldlineOP\PrestaShop\Builder\HostedPaymentRequestBuilder::GIFT_CARD_PRODUCT_TYPE_FOOD_DRINK => $this->l('Food & Drink'),
+                \WorldlineOP\PrestaShop\Builder\HostedPaymentRequestBuilder::GIFT_CARD_PRODUCT_TYPE_HOME_GARDEN => $this->l('Home & Garden'),
+                \WorldlineOP\PrestaShop\Builder\HostedPaymentRequestBuilder::GIFT_CARD_PRODUCT_TYPE_GIFT_FLOWERS => $this->l('Gift & Flowers'),
+            ];
+            $currentType = $idProduct ? ToolsWorldline::getGiftCardTypeByIdProduct($idProduct) : \WorldlineOP\PrestaShop\Builder\HostedPaymentRequestBuilder::GIFT_CARD_PRODUCT_TYPE_NONE;
+
+            return $twig->render('@Modules/cawlop/views/templates/admin/product_extra_module.html.twig', [
+                'currentTypeLabel' => html_entity_decode($typeLabels[$currentType] ?? $this->l('None'), ENT_QUOTES, 'UTF-8'),
+            ]);
+        }
+
+        // PS 8.0 with legacy product page: render editable Smarty form directly.
         $this->context->smarty->assign([
             'worldlineopGCTypeNone' => \WorldlineOP\PrestaShop\Builder\HostedPaymentRequestBuilder::GIFT_CARD_PRODUCT_TYPE_NONE,
             'worldlineopGCTypeFoodDrink' => \WorldlineOP\PrestaShop\Builder\HostedPaymentRequestBuilder::GIFT_CARD_PRODUCT_TYPE_FOOD_DRINK,
@@ -425,6 +448,63 @@ class Cawlop extends PaymentModule
         ]);
 
         return $this->display(dirname(__FILE__), 'views/templates/admin/hookDisplayAdminProductsExtra.tpl');
+    }
+
+    /**
+     * PS 8.1+: adds the Cawl gift card tab to the product form.
+     *
+     * @param mixed[] $params
+     */
+    public function hookActionProductFormBuilderModifier(array $params): void
+    {
+        if (!Tools::version_compare(_PS_VERSION_, '8.1.0', '>=')) {
+            return;
+        }
+
+        /** @var \WorldlineOP\PrestaShop\Form\Modifier\ProductFormModifier|null $modifier */
+        $modifier = $this->get(\WorldlineOP\PrestaShop\Form\Modifier\ProductFormModifier::class);
+        if ($modifier === null) {
+            return;
+        }
+
+        $productId = isset($params['id']) ? (int) $params['id'] : null;
+        $modifier->modify($productId, $params['form_builder']);
+    }
+
+    /**
+     * PS 8.1+: saves gift card type from the CAWL tab after the product form is submitted.
+     *
+     * @param mixed[] $params
+     */
+    public function hookActionAfterUpdateProductFormHandler(array $params): void
+    {
+        if (!isset($params['id'])) {
+            return;
+        }
+
+        // GiftCardTabType is mapped=>false so its data is not in $params['form_data'].
+        // Read directly from POST: product[worldlineop_gift_card][gift_card_type].
+        $productPost = Tools::getValue('product');
+        $giftCardType = is_array($productPost)
+            ? ($productPost['worldlineop_gift_card']['gift_card_type'] ?? null)
+            : null;
+
+        if ($giftCardType === null) {
+            return;
+        }
+
+        try {
+            Db::getInstance()->insert(
+                'cawlop_product_gift_card',
+                [
+                    'id_product' => (int) $params['id'],
+                    'product_type' => pSQL($giftCardType),
+                ],
+                false, true, Db::ON_DUPLICATE_KEY
+            );
+        } catch (Exception $e) {
+            $this->logger->error($e->getMessage(), ['trace' => $e->getTraceAsString()]);
+        }
     }
 
     /**
