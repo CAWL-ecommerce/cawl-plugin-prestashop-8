@@ -14,12 +14,11 @@
 
 <h1>
   {l s='What\'s new in version' mod='cawlop'}
-  2.0.31
+  2.0.32
 </h1>
 <br>
 <ul>
-  <li>{l s='Fixed Mealvoucher compatibility with Prestashop 9' mod='cawlop'}</li>
-  <li>{l s='Fixed CAWL logo' mod='cawlop'}</li>
+  <li>{l s='Added showResultPage parameter' mod='cawlop'}</li>
 </ul>
 <br>
 <hr>

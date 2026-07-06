@@ -57,6 +57,7 @@ class AdvancedSettingsResolver extends AbstractSettingsResolver
                 'threeDSExemptedValue',
                 'enforce3DS',
                 'surchargingEnabled',
+                'displayPaymentConfirmationPage',
                 'displayWhatsNew',
             ])
             ->setNormalizer(
@@ -169,6 +170,12 @@ class AdvancedSettingsResolver extends AbstractSettingsResolver
             )
             ->setNormalizer(
                 'surchargingEnabled',
+                function (Options $options, $value) {
+                    return (bool) $value;
+                }
+            )
+            ->setNormalizer(
+                'displayPaymentConfirmationPage',
                 function (Options $options, $value) {
                     return (bool) $value;
                 }
