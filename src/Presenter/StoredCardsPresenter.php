@@ -25,6 +25,7 @@ use Currency;
 use OnlinePayments\Sdk\Merchant\MerchantClient;
 use OnlinePayments\Sdk\Merchant\Products\GetPaymentProductParams;
 use WorldlineOP\PrestaShop\Repository\TokenRepository;
+use WorldlineOP\PrestaShop\Utils\Tools;
 
 /**
  * Class StoredCardsPresenter
@@ -74,6 +75,11 @@ class StoredCardsPresenter implements PresenterInterface
             'tokens' => [],
             'img_path' => $this->module->getPathUri() . 'views/img/',
         ];
+        // Listed whatever "Enable saving cards" says. Hiding the list here was the same mistake as
+        // hiding the link: it left the customer with cards they could neither see nor delete.
+        if (Tools::isGuestCheckout($this->context)) {
+            return $data;
+        }
         /** @var \WorldlineopToken[] $tokens */
         $tokens = $this->tokenRepository->findByIdCustomerIdShop(
             $this->context->customer->id,

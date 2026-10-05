@@ -27,6 +27,18 @@ class CardPaymentMethodSpecificInputForHostedCheckout extends DataObject
     public $paymentProductPreferredOrder = null;
 
     /**
+     * LOCAL ADDITION - not part of vendored SDK 5.7.0.
+     *
+     * The platform accepts this field, but the SDK only exposes it from 8.0 onward. It is added
+     * here rather than by upgrading the SDK, because the 8.0+ line type-hints every setter and
+     * splits the request payloads into X / XBase pairs, which is an API migration for the whole
+     * payment flow. Re-apply this property if this SDK is ever replaced wholesale.
+     *
+     * @var string
+     */
+    public $tokenizationMode = null;
+
+    /**
      * @return bool
      */
     public function getClickToPay()
@@ -75,6 +87,22 @@ class CardPaymentMethodSpecificInputForHostedCheckout extends DataObject
     }
 
     /**
+     * @return string
+     */
+    public function getTokenizationMode()
+    {
+        return $this->tokenizationMode;
+    }
+
+    /**
+     * @param string
+     */
+    public function setTokenizationMode($value)
+    {
+        $this->tokenizationMode = $value;
+    }
+
+    /**
      * @return object
      */
     public function toObject()
@@ -93,6 +121,9 @@ class CardPaymentMethodSpecificInputForHostedCheckout extends DataObject
                     $object->paymentProductPreferredOrder[] = $element;
                 }
             }
+        }
+        if (!is_null($this->tokenizationMode)) {
+            $object->tokenizationMode = $this->tokenizationMode;
         }
         return $object;
     }
@@ -119,6 +150,9 @@ class CardPaymentMethodSpecificInputForHostedCheckout extends DataObject
             foreach ($object->paymentProductPreferredOrder as $element) {
                 $this->paymentProductPreferredOrder[] = $element;
             }
+        }
+        if (property_exists($object, 'tokenizationMode')) {
+            $this->tokenizationMode = $object->tokenizationMode;
         }
         return $this;
     }

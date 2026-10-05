@@ -41,7 +41,7 @@ class Cawlop extends PaymentModule
     {
         $this->name = 'cawlop';
         $this->author = 'Cawl Online Payments';
-        $this->version = '2.0.36';
+        $this->version = '2.0.37';
         $this->tab = 'payments_gateways';
         $this->module_key = '654d8af323df79f8975e7e0eec733d93';
         $this->currencies = true;
@@ -292,6 +292,14 @@ class Cawlop extends PaymentModule
      */
     public function hookDisplayCustomerAccount($params)
     {
+        // The stored-cards page is INDEPENDENT of "Enable saving cards": that setting governs the
+        // checkout flow, and the client's requirement is that a customer can still reach cards they
+        // saved earlier to view and delete them. Only guests are excluded, and only because a guest
+        // can never have saved one.
+        if (WorldlineOP\PrestaShop\Utils\Tools::isGuestCheckout($this->context)) {
+            return '';
+        }
+
         return $this->display(dirname(__FILE__), 'views/templates/front/hookCustomerAccount.tpl');
     }
 
