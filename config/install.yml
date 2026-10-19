@@ -20,3 +20,4 @@ services:
       - '@cawlop.settings.payment_methods.updater'
       - !php/const _PS_VERSION_
       - '@cawlop.logger.factory'
+      - '@cawlop.settings.defaults'

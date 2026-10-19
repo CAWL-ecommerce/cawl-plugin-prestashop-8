@@ -141,6 +141,10 @@ class CawlopWebhookModuleFrontController extends ModuleFrontController
      */
     public function respondOK()
     {
+        // Keep processing the webhook after the response is sent, even when the connection to the web server is gone
+        if (function_exists('ignore_user_abort')) {
+            ignore_user_abort(true);
+        }
         session_write_close();
         // Apache/FPM path: finish request early so webhook processing runs async
         if (function_exists('fastcgi_finish_request')) {
@@ -149,7 +153,6 @@ class CawlopWebhookModuleFrontController extends ModuleFrontController
             return;
         }
         // Nginx fallback: flush output buffers and close connection
-        ignore_user_abort(true);
         ob_start();
         header('HTTP/1.1 200 OK');
         header('Content-Encoding: none');

@@ -18,6 +18,10 @@ declare(strict_types=1);
 
 namespace WorldlineOP\PrestaShop\Form\Modifier;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 use PrestaShopBundle\Form\FormBuilderModifier;
 use Symfony\Component\Form\FormBuilderInterface;
 use WorldlineOP\PrestaShop\Builder\HostedPaymentRequestBuilder;

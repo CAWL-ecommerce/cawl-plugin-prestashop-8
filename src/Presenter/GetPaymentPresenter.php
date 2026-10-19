@@ -482,7 +482,7 @@ class GetPaymentPresenter
      * @param $paymentDetails
      * @return float|string
      * @throws \PrestaShop\Decimal\Exception\DivisionByZeroException
- */
+     */
     public function getCapturableAmount($paymentDetails)
     {
         if (!$paymentDetails) {

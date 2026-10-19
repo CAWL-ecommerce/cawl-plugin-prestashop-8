@@ -21,6 +21,7 @@ use Cawlop;
 use Monolog\Logger;
 use PrestaShopBundle\Install\SqlLoader;
 use Symfony\Component\Yaml\Parser;
+use WorldlineOP\PrestaShop\Configuration\Loader\DefaultSettingsProvider;
 use WorldlineOP\PrestaShop\Configuration\Updater\AccountSettingsUpdater;
 use WorldlineOP\PrestaShop\Configuration\Updater\AdvancedSettingsUpdater;
 use WorldlineOP\PrestaShop\Configuration\Updater\PaymentMethodsSettingsUpdater;
@@ -57,6 +58,9 @@ class Installer
     /** @var Logger */
     private $logger;
 
+    /** @var DefaultSettingsProvider */
+    private $defaultSettingsProvider;
+
     /**
      * Installer constructor.
      *
@@ -68,6 +72,7 @@ class Installer
      * @param PaymentMethodsSettingsUpdater $paymentMethodsSettingsUpdater
      * @param string $psVersion
      * @param LoggerFactory $loggerFactory
+     * @param DefaultSettingsProvider $defaultSettingsProvider
      */
     public function __construct(
         Cawlop $module,
@@ -77,8 +82,10 @@ class Installer
         AdvancedSettingsUpdater $advancedSettingsUpdater,
         PaymentMethodsSettingsUpdater $paymentMethodsSettingsUpdater,
         $psVersion,
-        LoggerFactory $loggerFactory
+        LoggerFactory $loggerFactory,
+        DefaultSettingsProvider $defaultSettingsProvider
     ) {
+        $this->defaultSettingsProvider = $defaultSettingsProvider;
         $this->module = $module;
         $this->tabManager = $tabManager;
         $this->orderStatusManager = $orderStatusManager;
@@ -105,17 +112,12 @@ class Installer
         $this->installDb();
         $this->orderStatusManager->installOrderStatuses($defaults['orderStatuses'], $this->module->name);
         $this->logger->info('Applying account default configuration');
-        $defaults['configuration']['accountSettings']['webhookMode'] = 'automatic';
-        $defaults['configuration']['accountSettings']['additionalWebhookUrls'] = [];
-        $this->accountSettingsUpdater->update($defaults['configuration']['accountSettings']);
+        $this->accountSettingsUpdater->update($this->defaultSettingsProvider->getAccountSettings());
         $this->logger->info('Applying advanced default configuration');
-        $defaults['configuration']['advancedSettings']['paymentSettings']['successOrderStateId'] = \Configuration::get('PS_OS_PAYMENT');
-        $defaults['configuration']['advancedSettings']['paymentSettings']['pendingOrderStateId'] = \Configuration::getGlobalValue('WOP_PENDING_ORDER_STATUS_ID');
-        $defaults['configuration']['advancedSettings']['paymentSettings']['errorOrderStateId'] = \Configuration::get('PS_OS_ERROR');
-        $this->advancedSettingsUpdater->update($defaults['configuration']['advancedSettings']);
+        $this->advancedSettingsUpdater->update($this->defaultSettingsProvider->getAdvancedSettings());
         \Configuration::updateGlobalValue('CAWLOP_SHOW_ADVANCED_SETTINGS', false);
         $this->logger->info('Applying payment methods default configuration');
-        $this->paymentMethodsSettingsUpdater->update($defaults['configuration']['paymentMethodsSettings']);
+        $this->paymentMethodsSettingsUpdater->update($this->defaultSettingsProvider->getPaymentMethodsSettings());
         $this->logger->info('Default configuration applied');
         $this->logger->info('Install process finished with success');
     }

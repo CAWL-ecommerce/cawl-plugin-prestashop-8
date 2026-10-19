@@ -18,6 +18,7 @@ require_once 'vendor/autoload.php';
 
 use Monolog\Logger;
 use PrestaShop\ModuleLibServiceContainer\DependencyInjection\ServiceContainer;
+use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
 use WorldlineOP\PrestaShop\Utils\Tools as ToolsWorldline;
 
 /**
@@ -41,7 +42,7 @@ class Cawlop extends PaymentModule
     {
         $this->name = 'cawlop';
         $this->author = 'Cawl Online Payments';
-        $this->version = '2.0.37';
+        $this->version = '2.0.38';
         $this->tab = 'payments_gateways';
         $this->module_key = '654d8af323df79f8975e7e0eec733d93';
         $this->currencies = true;
@@ -224,23 +225,19 @@ class Cawlop extends PaymentModule
     }
 
     /**
+     * Configuration page scripts are loaded in AdminCawlopConfigurationController::setMedia()
+     *
      * @return string
      */
     public function hookDisplayBackOfficeFooter()
     {
-        if (Tools::getValue('controller') == 'AdminCawlopConfiguration') {
-            $this->context->smarty->assign('cawlopModulePathUri', $this->getPathUri());
-
-            return $this->display(dirname(__FILE__), 'views/templates/admin/hookDisplayBackOfficeFooter.tpl');
-        }
-
         return '';
     }
 
     /**
      * @param array $params
      *
-     * @return \PrestaShop\PrestaShop\Core\Payment\PaymentOption[]
+     * @return PaymentOption[]
      */
     public function hookPaymentOptions($params)
     {
@@ -252,12 +249,12 @@ class Cawlop extends PaymentModule
             /** @var \WorldlineOP\PrestaShop\Presenter\PaymentOptionsPresenter $paymentOptionsPresenter */
             $paymentOptionsPresenter = $this->getService('cawlop.payment.presenter');
         } catch (Exception $e) {
-            $this->logger->error('Error while presenting payment options', ['message' => $e->getMessage()]);
+            $this->getLogger()->error('Error while presenting payment options', ['message' => $e->getMessage()]);
 
             return [];
         }
 
-        /** @var \PrestaShop\PrestaShop\Core\Payment\PaymentOption[] $options */
+        /** @var PaymentOption[] $options */
         $options = $paymentOptionsPresenter->present();
 
         return $options;
@@ -511,7 +508,7 @@ class Cawlop extends PaymentModule
                 false, true, Db::ON_DUPLICATE_KEY
             );
         } catch (Exception $e) {
-            $this->logger->error($e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            $this->getLogger()->error($e->getMessage(), ['trace' => $e->getTraceAsString()]);
         }
     }
 
@@ -527,7 +524,7 @@ class Cawlop extends PaymentModule
             try {
                 Db::getInstance()->insert('cawlop_product_gift_card', ['id_product' => (int) $idProduct, 'product_type' => pSQL($form['type'])], false, true, Db::ON_DUPLICATE_KEY);
             } catch (Exception $e) {
-                $this->logger->error($e->getMessage(), ['trace' => $e->getTraceAsString()]);
+                $this->getLogger()->error($e->getMessage(), ['trace' => $e->getTraceAsString()]);
             }
         }
     }
